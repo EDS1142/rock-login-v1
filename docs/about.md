@@ -15,12 +15,17 @@ O **Rock Login V1** é uma solução de interface de autenticação padronizada,
 - **Responsividade Total**: Adaptação automática para tablets e smartphones, reorganizando o layout verticalmente.
 
 ### ⚙️ Arquitetura Técnica
-- **Core**: HTML5 semântico e CSS3 Vanilla (sem frameworks pesados).
+- **Core**: HTML5 semântico e CSS3 Vanilla.
+- **Ambiente de Desenvolvimento**: 
+  - **NPM**: Gestão de dependências e scripts.
+  - **Vite**: Servidor de desenvolvimento rápido com Hot Module Replacement (HMR).
 - **Configuração Centralizada**: Objeto `CONFIG` no `script.js` que permite personalizar:
   - Nome da Aplicação.
   - Descrição do Sistema.
   - Cores Primárias e Secundárias.
   - Copyright dinâmico.
+- **Dependências Externas**:
+  - `@supabase/supabase-js`: Preparado para integração com o banco de dados.
 - **Manipulação de DOM**: Lógica pura para alternar visibilidade de senha e estados de botão.
 
 ### 🛡️ Funcionalidades de Interface
