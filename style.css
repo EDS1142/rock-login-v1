@@ -1,0 +1,303 @@
+:root {
+    /* Brand Colors - Standard "Rock Team" palette */
+    --brand-primary: #0084c2;
+    --brand-secondary: #005a87;
+    --brand-gradient-start: #0084c2;
+    --brand-gradient-end: #005a87;
+
+    /* Neutral Colors */
+    --bg-main: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #65676b;
+    --text-on-brand: #ffffff;
+
+    /* UI Elements */
+    --input-bg: #f0f2f5;
+    --input-border: #e4e6eb;
+    --input-focus: #0084c2;
+    --btn-hover: #0070a5;
+
+    /* Effects */
+    --shadow-main: 0 12px 28px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    --radius-card: 16px;
+    --radius-elements: 8px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--brand-primary);
+    /* Background default matching the branding */
+    background: radial-gradient(circle at top left, var(--brand-primary), var(--brand-secondary));
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+.login-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-card);
+    display: flex;
+    overflow: hidden;
+    box-shadow: var(--shadow-main);
+    width: 100%;
+    min-height: 550px;
+    animation: cardEnter 0.8s ease-out;
+}
+
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Branding Panel (Left) */
+.branding-panel {
+    flex: 1.1;
+    background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+    color: var(--text-on-brand);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    position: relative;
+    text-align: center;
+}
+
+/* Abstract background shapes */
+.branding-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.branding-content {
+    z-index: 1;
+}
+
+.logo-container {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 24px;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.app-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Make the logo white for contrast and add shadow */
+    filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.branding-panel p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.branding-footer {
+    position: absolute;
+    bottom: 30px;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Form Panel (Right) */
+.form-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    background-color: var(--card-bg);
+}
+
+.form-content {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+}
+
+.input-group {
+    margin-bottom: 24px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-elements);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--brand-primary);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 132, 194, 0.1);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.toggle-password:hover {
+    color: var(--brand-primary);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--brand-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-elements);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: var(--btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 132, 194, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+    .login-card {
+        flex-direction: column;
+        max-width: 450px;
+        min-height: auto;
+    }
+
+    .branding-panel {
+        padding: 40px 20px;
+        flex: none;
+    }
+
+    .logo-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .form-panel {
+        padding: 40px 30px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
