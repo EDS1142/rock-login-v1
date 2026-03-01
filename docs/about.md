@@ -27,6 +27,30 @@ O **Rock Login V1** é uma solução de interface de autenticação padronizada,
 - **E-mail/Senha**: Campos de entrada com ícones contextuais.
 - **Toggle Password**: Botão interativo para exibir/ocultar a senha.
 - **Loading State**: Simulação de requisição com spinner e desativação de botão para prevenir múltiplos envios.
+---
+
+## 🗄️ Estrutura do Banco de Dados (Supabase)
+
+O Rock Login V1 centraliza o acesso ao ecossistema **Rock Team**, utilizando um banco de dados Supabase compartilhado (`BD_Geral`). A arquitetura do banco é projetada para ser multi-aplicativo, permitindo que diferentes sistemas operem de forma independente em um único esquema.
+
+### **Arquitetura Baseada em Prefixos**
+As tabelas do banco de dados são identificadas por prefixos técnicos que segmentam os dados por aplicação:
+
+- **`app_`**: Sistema Acadêmico Central (Gestão de Aulas, Matrículas, Presença e Avaliação).
+- **`rock_`**: Estrutura de Infraestrutura (Salas, Livros, Horários e Turmas Base).
+- **`turmas_`**: Organização secundária de alocação de classes e alunos.
+- **`okrs_`**: Módulo de acompanhamento de metas institucionais.
+- **`estoque_`**: Gestão de materiais e logística escolar.
+- **`pesquisas_`**: Sistema de coleta de feedbacks e NPS.
+
+### **Identidade e Mapeamento de Usuários**
+O sistema de autenticação é projetado para operar exclusivamente com usuários previamente cadastrados no Supabase. O login valida as credenciais contra a tabela base de autenticação e cruza os dados com as tabelas de perfil do ecossistema:
+
+1. **`auth.users` (Supabase Internal)**: Tabela mestre que gerencia e-mail, senhas criptografadas e tokens de sessão.
+2. **`public.profiles`**: Tabela de extensão principal. Vincula o UUID do usuário a papéis de negócio (`role`) e ao identificador de professor (`teacher_id`).
+3. **`public.app_users`**: Tabela de controle de acesso específica para os módulos do sistema acadêmico (`app_`).
+4. **`public.users`**: Tabela de usuários para o módulo de gestão de documentos e assinaturas digitais.
+5. **`public.app_teachers` / `public.rock_professores`**: Tabelas que armazenam os dados profissionais dos docentes, vinculados ao login para controle de turmas e relatórios.
 
 ---
 
@@ -43,6 +67,22 @@ O **Rock Login V1** é uma solução de interface de autenticação padronizada,
 ├── AvatarRock.png        # Asset visual para identificação
 └── .git/                 # Controle de versão (se aplicável)
 ```
+
+---
+
+---
+
+## 🔐 Segurança e Isolamento de Aplicações
+
+Devido à natureza compartilhada do banco de dados (`BD_Geral`), as seguintes diretrizes são **mandatórias**:
+
+### **1. Fluxo de Autenticação Obrigatório**
+- **Sempre a Primeira Tela**: Por questão de segurança, a tela de login deve ser, obrigatoriamente, a porta de entrada de qualquer aplicação. Nenhum recurso ou dado interno deve ser acessível sem que o usuário tenha passado pelo processo de autenticação.
+- **Acesso Restrito**: O acesso a qualquer app dentro do ecossistema Rock Team deve ser realizado estritamente via portal de login.
+
+### **2. Integridade do Ecossistema**
+- **Isolamento de Lógica**: Ao desenvolver ou customizar o login para um novo app, é vital garantir que as alterações não quebrem a autenticação ou o fluxo de outros apps que compartilham o mesmo banco de dados.
+- **Cuidado com Mudanças Globais**: Alterações em tabelas centrais (`public.profiles`, `auth.users`, `public.app_users`) devem ser testadas em todo o ecossistema para evitar efeitos colaterais em cascata.
 
 ---
 
