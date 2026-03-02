@@ -91,31 +91,48 @@ O app deve utilizar o **Supabase Auth** para autenticação básica.
 ### 2. Implementação da Autorização
 Logo após a chamada de `signInWithPassword` (ou qualquer método de login), adicione a verificação da RPC `check_app_access`.
 
-```javascript
-// Exemplo de integração genérica
-const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+> [!IMPORTANT]
+> **Sessões entre Domínios (Cross-Domain):** O Portal de Login passa o token via URL fragment (hash). O App destino deve ler esse hash e aplicar manualmente usando chaves customizadas (`sso_access` e `sso_refresh`) para evitar que o cliente Supabase as limpe antes do processamento.
 
-if (data?.user) {
-  // Verifica se o usuário tem permissão para ESTE app específico
-  const { data: hasAccess, error: accessError } = await supabase.rpc('check_app_access', {
-    user_id: data.user.id,
-    app_id: 'ID_DO_SEU_APP' // ex: 'rockrema-v2'
+```javascript
+// Exemplo de integração robusta
+async function verifyAccess(userId) {
+  // Chamada RPC para verificar se o usuário tem permissão para ESTE app
+  const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
+    p_user_id: userId,
+    p_app_id: 'ID_DO_APP' // ex: 'rockrema-v2'
   });
 
-  if (accessError || !hasAccess) {
-    // Se não tiver acesso, desloga e impede a entrada
+  if (error || !hasAccess) {
     await supabase.auth.signOut();
-    alert("Dê um tchauzinho! Você não tem permissão para este sistema.");
-    return;
+    window.location.href = 'https://rock-portal-v1.netlify.app/?error=unauthorized';
+    return false;
   }
-  
-  // Sucesso: Redirecionar para a área interna
-  window.location.href = '/dashboard';
+  return true;
 }
 ```
 
-### 3. IDs de Aplicativos Registrados
-Use os IDs exatos listados na seção **"Ecossistema de Aplicações"** acima para garantir que o vínculo funcione corretamente.
+### 3. Gestão de Perfis (Roles)
+Para obter o papel do usuário dentro de um contexto específico:
+```javascript
+const { data: userRole } = await supabase.rpc('get_user_app_role', {
+    p_user_id: user.id,
+    p_app_id: 'ID_DO_APP'
+});
+// Retorna: 'Admin', 'Teacher', 'Pedagógico', etc.
+```
+
+---
+
+## ⚠️ Resolução de Problemas e Armadilhas
+
+### 1. O Perigo do `await` no `onAuthStateChange`
+**NUNCA** use `async/await` diretamente dentro do callback do `supabase.auth.onAuthStateChange`. Isso pode travar o motor de autenticação.
+*   **Solução:** Use o callback apenas para atualizar um estado local e utilize um `useEffect` (ou equivalente) para reagir a essa mudança e realizar as chamadas assíncronas ao banco.
+
+### 2. Evitando o "Access Token Devoured"
+Ao redirecionar do Portal para o App, use parâmetros de hash customizados (como `sso_access`) em vez do padrão `access_token`. Isso impede que a biblioteca cliente do Supabase no app de destino apague o token da URL antes que você possa confirmá-lo e processar a lógica de permissão (RPC).
+
 
 ---
 
