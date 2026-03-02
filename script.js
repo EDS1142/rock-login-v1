@@ -9,7 +9,14 @@ const CONFIG = {
     copyright: `© ${new Date().getFullYear()} Rock Education System`,
     primaryColor: "#0084c2",
     secondaryColor: "#005a87",
-    currentAppId: 'rock-portal-v1' // ID para validação centralizada
+    defaultAppId: 'rock-portal-v1'
+};
+
+// Global state to store the actual target app
+let targetApp = {
+    id: CONFIG.defaultAppId,
+    name: CONFIG.appName,
+    url: null
 };
 
 // Initialize Supabase
@@ -17,12 +24,37 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Apply configuration
-    document.title = `Login | ${CONFIG.appName}`;
-    document.getElementById('app-title').textContent = CONFIG.appName;
+async function initializeApp() {
+    // 1. Check if there's an 'app' parameter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const appIdFromUrl = urlParams.get('app');
+
+    if (appIdFromUrl) {
+        // 2. Fetch app meta-data from central_apps
+        const { data: appData } = await supabase
+            .from('central_apps')
+            .select('name, url')
+            .eq('id', appIdFromUrl)
+            .single();
+
+        if (appData) {
+            targetApp.id = appIdFromUrl;
+            targetApp.name = appData.name;
+            targetApp.url = appData.url;
+
+            // Update UI dynamically
+            document.title = `Login | ${targetApp.name}`;
+            document.getElementById('app-title').textContent = targetApp.name;
+        }
+    }
+
+    // Apply baseline UI
     document.getElementById('app-description').textContent = CONFIG.appDescription;
     document.getElementById('copyright').textContent = CONFIG.copyright;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
 
     // Password Toggle Logic (mantido do original)
     const togglePassword = document.getElementById('togglePassword');
@@ -76,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { data: hasCentralAccess, error: centralError } = await supabase
                 .rpc('check_app_access', {
                     p_user_id: user.id,
-                    p_app_id: CONFIG.currentAppId
+                    p_app_id: targetApp.id
                 });
 
             // 3. Lógica de Segurança (Audit Mode)
@@ -85,27 +117,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (allowsLegacy && !allowsCentral) {
                 // ALERTA: O sistema novo bloquearia este usuário. 
-                // Registramos o evento mas permitimos o acesso (Safety Mode).
                 console.warn("MIGRAÇÃO: Usuário tem acesso legado mas não centralizado.");
                 await supabase.from('app_security_audit').insert({
                     event_type: 'mismatch_detected',
                     user_id: user.id,
-                    app_id: CONFIG.currentAppId,
+                    app_id: targetApp.id,
                     details: { legacy_role: legacyProfile?.role, central_access: false }
                 });
             }
 
             // 4. Conclusão do Login
-            // No futuro, se !allowsCentral, bloquearemos o login.
-            // Por enquanto, seguimos com o acesso se o LEGADO permitir.
             if (!allowsLegacy && !allowsCentral) {
-                throw new Error("Você não tem permissão para acessar este aplicativo.");
+                throw new Error(`Acesso Negado: Você não tem permissão para acessar o sistema "${targetApp.name}".`);
             }
 
             console.log("Login bem sucedido em modo de auditoria.");
-            // Redirecionamento (exemplo)
-            // window.location.href = '/dashboard';
-            alert('Sucesso! (Modo Dual-Check Ativo)');
+
+            // Redirecionamento 
+            if (targetApp.url) {
+                window.location.href = targetApp.url;
+            } else {
+                alert(`Sucesso! Você agora está logado no ecossistema Rock Team. (App: ${targetApp.name})`);
+            }
 
         } catch (err) {
             console.error(err);
