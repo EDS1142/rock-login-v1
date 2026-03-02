@@ -7,7 +7,15 @@ Este aplicativo deixará de usar sua própria tela de login legada. Em vez disso
 
 ## 2. Identificação do App
 Para este aplicativo, utilize o seguinte identificador oficial:
-**ID do App:** `rockrema-v2`  *(Substitua pelo ID correto caso esteja migrando outro app)*
+**ID do App:** `rockrema-v2`
+
+## 3. Usuários Autorizados (Exclusivo)
+A autorização para este app foi configurada por **exclusão**. Apenas os seguintes e-mails possuem acesso ativo no banco de dados para este sistema:
+
+- **rockpg.adm@gmail.com** (Acesso Administrativo)
+- **rockfeller.pontagrossa@gmail.com** (Acesso Direção)
+
+*Qualquer outro e-mail, mesmo que autenticado no Supabase, terá o acesso negado pela função `check_app_access`.*
 
 ---
 
