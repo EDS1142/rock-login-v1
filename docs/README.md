@@ -57,10 +57,9 @@ Identificamos os seguintes aplicativos ativos que utilizam o banco compartilhado
 6.  **rock-reposicoes-v1** (`repo_`): Controle de reposições.
 7.  **regua-comunicacao-v2** (`rg_`): Comunicação e templates.
 8.  **compras-manutencao-v1** (`buy_`): Gestão de compras.
-9.  **teachers-room-v1** (`tr_`): Mural dos professores.
+9.  **teachers-room-v1** (`tr_`): Portal dos professores.
 10. **rockpg-turmas-v3** (`app_`): Gestão administrativa central.
-11. **estoque-v1** (`estoque_`): Logística escolar.
-12. **pdi-v1** (`pdi_`): Plano de Desenvolvimento Individual.
+11. **pdi-v1** (`pdi_`): Plano de Desenvolvimento Individual.
 
 ---
 
