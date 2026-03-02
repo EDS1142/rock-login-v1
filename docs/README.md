@@ -79,8 +79,47 @@ Identificamos os seguintes aplicativos ativos que utilizam o banco compartilhado
 
 ---
 
-## 🛠️ Como Customizar
-Para adaptar o login para um novo app, configure o objeto no `script.js`:
+---
+
+## 🛠️ Guia de Integração para desenvolvedores
+
+Para integrar qualquer Web App ao sistema de controle de acesso centralizado, siga estes passos:
+
+### 1. Requisito
+O app deve utilizar o **Supabase Auth** para autenticação básica.
+
+### 2. Implementação da Autorização
+Logo após a chamada de `signInWithPassword` (ou qualquer método de login), adicione a verificação da RPC `check_app_access`.
+
+```javascript
+// Exemplo de integração genérica
+const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+if (data?.user) {
+  // Verifica se o usuário tem permissão para ESTE app específico
+  const { data: hasAccess, error: accessError } = await supabase.rpc('check_app_access', {
+    user_id: data.user.id,
+    app_id: 'ID_DO_SEU_APP' // ex: 'rockrema-v2'
+  });
+
+  if (accessError || !hasAccess) {
+    // Se não tiver acesso, desloga e impede a entrada
+    await supabase.auth.signOut();
+    alert("Dê um tchauzinho! Você não tem permissão para este sistema.");
+    return;
+  }
+  
+  // Sucesso: Redirecionar para a área interna
+  window.location.href = '/dashboard';
+}
+```
+
+### 3. IDs de Aplicativos Registrados
+Use os IDs exatos listados na seção **"Ecossistema de Aplicações"** acima para garantir que o vínculo funcione corretamente.
+
+---
+
+## ⚙️ Como Customizar o Portal de Login
 ```javascript
 const CONFIG = {
     appName: "Nome do App",
