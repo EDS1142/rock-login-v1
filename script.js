@@ -9,7 +9,7 @@ const CONFIG = {
     copyright: `© ${new Date().getFullYear()} Rock Education System`,
     primaryColor: "#0084c2",
     secondaryColor: "#005a87",
-    currentAppId: 'rockpg-turmas-v3' // ID para validação centralizada
+    currentAppId: 'rock-portal-v1' // ID para validação centralizada
 };
 
 // Initialize Supabase

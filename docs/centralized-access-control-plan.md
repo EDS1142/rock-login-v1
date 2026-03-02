@@ -3,20 +3,25 @@
 ## Projetos Mapeados no Banco de Dados
 Abaixo estão os aplicativos identificados através dos prefixos das tabelas no Supabase. Estes são os candidatos iniciais para a tabela `central_apps`:
 
-1.  **rockpg-turmas-v3** (Prefixo `app_`): Sistema de gestão de turmas administrativo.
-2.  **to-do-list-v1** (Prefixo `todo_`): Gerenciador de tarefas e tags.
-3.  **compras-manutencao-v1** (Prefixo `buy_`): Gestão de compras e fornecedores.
-4.  **teachers-room-v1** (Prefixo `tr_`): Mural de avisos e comunicações para professores.
-5.  **estoque-v1** (Prefixo `estoque_`): Gestão de itens e movimentações de estoque.
-6.  **pdi-v1** (Prefixo `pdi_`): Plano de Desenvolvimento Individual (PDI) de professores.
-7.  **turmas-old/v2** (Prefixos `turmas_` e `rock_`): Versões anteriores ou legadas de gestão.
+1.  **rock-todo-list-v2** (Prefixo `todo_`): Gerenciador de tarefas e tags.
+2.  **student-abcd** (Prefixos `alunos`, `turmas_`): Portal do aluno/acadêmico.
+3.  **rock-recibo-v4** (Prefixos `rc_`, `rec_`): Emissão de recibos e eventos.
+4.  **rockrema-v2** (Prefixo `rema_`): Gestão de rematrículas.
+5.  **rock-cancel-v1** (Prefixo `cancel_`): Solicitações de cancelamento e motivos.
+6.  **rock-reposicoes-v1** (Prefixo `repo_`): Controle de reposições de aulas.
+7.  **regua-comunicacao-v2** (Prefixo `rg_`): Templates e relatórios de comunicação.
+8.  **compras-manutencao-v1** (Prefixo `buy_`): Gestão de compras e orçamentos.
+9.  **teachers-room-v1** (Prefixo `tr_`): Mural de avisos e comunicações para professores.
+10. **rockpg-turmas-v3** (Prefixo `app_`): Sistema de gestão de turmas (Administrativo).
+11. **estoque-v1** (Prefixo `estoque_`): Gestão de itens de estoque.
+12. **pdi-v1** (Prefixo `pdi_`): Plano de Desenvolvimento Individual.
 
 ---
 
 ## Perfis Padronizados (Roles)
 Estes são os perfis oficiais que serão utilizados na tabela `central_permissions`:
 
-- **Acadêmico**
+- **Pedagógico**
 - **Administrativo**
 - **Comercial**
 - **Direção**
@@ -53,7 +58,8 @@ Matriz de acesso que vincula usuários aos apps.
 - `id` (uuid, PK): ID único do registro.
 - `user_id` (uuid, FK para auth.users): O usuário autenticado.
 - `app_id` (text, FK para central_apps): O app ao qual ele tem acesso.
-- `role` (text): O papel/perfil do usuário **especificamente nesse app** (ex: 'admin', 'teacher', 'commercial', 'direction').
+- `role` (text): O papel/perfil do usuário **especificamente nesse app**.
+- `active` (boolean, default TRUE): Switch mestre para ativação/desativação de acesso (ex: demissões ou novos contratados).
 
 ---
 
@@ -66,7 +72,7 @@ Matriz de acesso que vincula usuários aos apps.
 ### Passo 2: Preparação do Banco de Dados
 - Criar as tabelas `central_apps` e `central_permissions`.
 - Criar funções auxiliares (PostgreSQL) para facilitar a checagem:
-  - `check_app_access(user_id, app_id)` -> Retorna boolean.
+  - `check_app_access(user_id, app_id)` -> Retorna boolean (Verifica se o usuário tem vínculo e se está `active = TRUE`).
   - `get_user_app_role(user_id, app_id)` -> Retorna o papel do usuário.
 
 ### Passo 3: Cópia e Sincronização de Dados (Coexistência)
@@ -104,7 +110,5 @@ Para garantir 100% de confiança, adotaremos a abordagem de **Execução em Para
 4.  **Não-Interferência:** A criação dessas tabelas não afeta os apps atuais até que as políticas de RLS sejam alteradas ou o código do frontend seja atualizado.
 5.  **Independência de Perfis:** Um usuário pode ser **Admin** no sistema de turmas e apenas **Visualizador** no sistema de lista de tarefas.
 
-## 5. Próximas Ações Sugeridas
-1.  Listar formalmente todos os Web Apps que já estão "vivos" no banco.
-2.  Criar um script SQL piloto para as novas tabelas.
-3.  Testar em uma tabela de teste antes de aplicar em `app_classes`.
+## 6. Dashboard de Gestão (Próximas Fases)
+Com a tabela `central_permissions` populada e a coluna `active` funcional, o próximo passo lógico é uma interface administrativa para que a Direção possa gerenciar esses acessos sem necessidade de comandos SQL.
