@@ -138,8 +138,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 console.log("Login bem sucedido.");
 
-                // Redirecionamento 
-                if (targetApp.url) {
+                // Redirecionamento com sessão
+                // Como os apps estão em domínios diferentes, precisamos passar a sessão via URL
+                const session = authData.session;
+                if (targetApp.url && session) {
+                    const redirectUrl = new URL(targetApp.url);
+                    // Uso de chaves "sso_" para impedir que o gotrue-js devore a hash prematuramente sem os params corretos
+                    redirectUrl.hash = `sso_access=${session.access_token}&sso_refresh=${session.refresh_token}`;
+                    window.location.href = redirectUrl.toString();
+                } else if (targetApp.url) {
                     window.location.href = targetApp.url;
                 } else {
                     alert(`Sucesso! Você agora está logado no ecossistema Rock Team. (App: ${targetApp.name})`);
