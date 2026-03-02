@@ -60,7 +60,7 @@ body {
     overflow: hidden;
     box-shadow: var(--shadow-main);
     width: 100%;
-    min-height: 550px;
+    min-height: 470px;
     animation: cardEnter 0.8s ease-out;
 }
 
@@ -104,6 +104,9 @@ body {
 
 .branding-content {
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .logo-container {

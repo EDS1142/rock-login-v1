@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
  */
 const CONFIG = {
     appName: "Rock Team",
-    appDescription: "Gerencie relatórios, frequências, reuniões e muito mais em um único lugar.",
+    appDescription: "Seu portal unificado de acesso a todas as ferramentas e soluções do ecossistema Rock Team.",
     copyright: `© ${new Date().getFullYear()} Rock Education System`,
     primaryColor: "#0084c2",
     secondaryColor: "#005a87",
