@@ -91,7 +91,7 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // protectRoute V3: TUDO-EM-UM (Locking + URL Cleanup + Access Check)
+        // protectRoute V3.2: TUDO-EM-UM (Com Escape de página de login)
         protectRoute(supabase, 'regua-comunicacao-v2')
             .then(ok => { if (ok) setLoading(false); })
             .catch(err => console.error("Falha crítica no App:", err));

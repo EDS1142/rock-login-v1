@@ -1,17 +1,12 @@
 /**
- * Rock Team - Standard Auth Integration (Bulletproof SSO Pattern V3)
+ * Rock Team - Standard Auth Integration (Bulletproof SSO Pattern V3.2)
  * 
  * Este script fornece a lógica recomendada para integrar qualquer App ao Portal de Login Central.
- * Ele resolve problemas comuns de:
- * 1. Loops de redirecionamento (Race Conditions)
- * 2. Travamentos no signOut (Deadlock)
- * 3. Limpeza de Tokens na URL (History API)
- * 4. Travamentos em verificação paralela (Initialization Lock)
  */
 
 // --- Configurações e Estado Interno ---
 let isRedirecting = false;
-let initPromise = null; // Trava de segurança para evitar inicializações paralelas
+let initPromise = null;
 
 /**
  * Utilitário de log para diagnóstico
@@ -24,18 +19,18 @@ const log = (msg, data = null) => {
 
 /**
  * Verifica e aplica tokens SSO da URL se presentes.
- * @param {object} supabase - Instância do cliente Supabase
  */
 export async function handleSSOCheck(supabase) {
     const hash = window.location.hash;
     const hasNewToken = hash && hash.includes('sso_access=');
 
-    // Se já houver um lock mas detectarmos um NOVO token, resetamos para processar o novo
+    // Se já houver um lock mas NÃO houver um novo token, aguarda o processo em curso
     if (initPromise && !hasNewToken) {
         log("Aguardando inicialização paralela...");
         return initPromise;
     }
 
+    // Se houver um novo token ou nenhuma inicialização em curso, inicia uma nova
     initPromise = (async () => {
         console.group("🔐 Auth Check: Verificando Sessão");
         log("Iniciando verificação...");
@@ -68,30 +63,31 @@ export async function handleSSOCheck(supabase) {
         }
     })();
 
-    await initPromise;
-    console.groupEnd();
+    try {
+        await initPromise;
+    } finally {
+        console.groupEnd();
+        // Não limpamos o initPromise aqui para que chamadas subsequentes subseqüentes vejam o resultado resolvido
+    }
     return;
 }
 
 /**
  * Valida se o usuário autenticado tem permissão para este App.
- * @param {Object} supabase - Instância do cliente Supabase
- * @param {string} appId - Identificador do app (ex: 'regua-comunicacao-v2')
- * @param {string} portalUrl - URL do portal de login para redirecionamento
  */
 export async function protectRoute(supabase, appId, portalUrl = 'https://rock-portal-v1.netlify.app') {
     if (isRedirecting) return false;
 
     try {
-        // 1. Processa token se existir (aguarda trava de segurança)
+        // 1. Processa token se existir
         await handleSSOCheck(supabase);
 
-        // 2. Tenta pegar sessão local (instantâneo) antes de ir para a rede
+        // 2. Tenta pegar sessão local (instantâneo)
         log("Checando usuário...");
         const { data: { session } } = await supabase.auth.getSession();
         let user = session?.user;
 
-        // Se não tem sessão local, tenta o getUser (rede) como fallback
+        // Fallback para rede se necessário
         if (!user) {
             log("Sessão local não encontrada, tentando rede...");
             const { data: { user: networkUser } } = await supabase.auth.getUser();
@@ -105,7 +101,7 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
             return false;
         }
 
-        // 3. Valida permissão centralizada no banco (RPC)
+        // 3. Valida permissão centralizada
         log(`Validando acesso para o app: ${appId}`);
         const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
             p_user_id: user.id,
@@ -114,19 +110,21 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
 
         if (error || !hasAccess) {
             console.warn("Acesso Negado: Usuário sem permissão central.");
-
-            // Logoff "Fire and Forget"
             supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
-
             redirectToPortal(portalUrl, appId, 'unauthorized');
             return false;
         }
 
         log("Acesso autorizado!");
 
-        // Pequena pausa (microtask) para garantir que o router e o Supabase terminem de sincronizar
-        // antes de remover a tela de loading. Resolve o problema de "spinner persistente" em apps React.
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // --- NOVIDADE V3.2: ESCAPE DO LOOPING DE PÁGINA DE LOGIN ---
+        // Se o código chegou aqui, o usuário ESTÁ logado e tem acesso.
+        // Se ainda estiver na URL /login, forçamos o redirecionamento para a Home do App.
+        if (window.location.pathname.endsWith('/login')) {
+            log("Usuário já autorizado detectado na página de login. Redirecionando para Home...");
+            window.location.href = window.location.origin + '/';
+            return false; // Retornamos falso pois vamos sair desta página
+        }
 
         return true;
     } catch (err) {
@@ -136,7 +134,7 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
 }
 
 /**
- * Função utilitária interna para redirecionamento seguro
+ * Redirecionamento seguro
  */
 function redirectToPortal(portalUrl, appId, errorType = null) {
     if (isRedirecting) return;
