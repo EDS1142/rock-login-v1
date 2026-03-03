@@ -1,48 +1,74 @@
 /**
- * Rock Team - Standard Auth Integration (Bulletproof SSO Pattern)
+ * Rock Team - Standard Auth Integration (Bulletproof SSO Pattern V3)
  * 
  * Este script fornece a lógica recomendada para integrar qualquer App ao Portal de Login Central.
  * Ele resolve problemas comuns de:
  * 1. Loops de redirecionamento (Race Conditions)
  * 2. Travamentos no signOut (Deadlock)
  * 3. Limpeza de Tokens na URL (History API)
+ * 4. Travamentos em verificação paralela (Initialization Lock)
  */
 
-// 1. Variável de controle de redirecionamento (Lock)
-// Previne que múltiplos gatilhos de Auth disparem redirects simultâneos.
+// --- Configurações e Estado Interno ---
 let isRedirecting = false;
+let initPromise = null; // Trava de segurança para evitar inicializações paralelas
 
 /**
- * Captura sessão vinda do Portal de Login (SSO)
- * Deve ser chamado logo no início da inicialização do App.
+ * Utilitário de log para diagnóstico
+ */
+const log = (msg, data = null) => {
+    const time = new Date().toLocaleTimeString();
+    if (data) console.log(`[AUTH ${time}] ${msg}`, data);
+    else console.log(`[AUTH ${time}] ${msg}`);
+};
+
+/**
+ * Verifica e aplica tokens SSO da URL se presentes.
+ * @param {object} supabase - Instância do cliente Supabase
  */
 export async function handleSSOCheck(supabase) {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('sso_access=')) {
-        const params = new URLSearchParams(hash.substring(1)); // Remove o #
-        const accessToken = params.get('sso_access');
-        const refreshToken = params.get('sso_refresh');
-
-        if (accessToken && refreshToken) {
-            console.log("SSO: Token detectado. Aplicando sessão...");
-
-            const { error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken
-            });
-
-            // Limpa a URL imediatamente para evitar re-processamento em caso de F5
-            window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
-
-            if (error) {
-                console.error("SSO: Erro ao aplicar sessão:", error.message);
-                return false;
-            }
-            return true;
-        }
+    // Se já estiver inicializando, aguarda a promessa existente (Lock de módulo)
+    if (initPromise) {
+        log("Aguardando inicialização paralela...");
+        return initPromise;
     }
-    return false;
+
+    initPromise = (async () => {
+        console.group("🔐 Auth Check: Verificando Sessão");
+        log("Iniciando verificação...");
+
+        const hash = window.location.hash;
+        if (hash && hash.includes('sso_access=')) {
+            log("Token detectado na URL. Aplicando sessão...");
+            const params = new URLSearchParams(hash.substring(1));
+            const access_token = params.get('sso_access');
+            const refresh_token = params.get('sso_refresh');
+
+            if (access_token && refresh_token) {
+                try {
+                    const { error } = await supabase.auth.setSession({
+                        access_token,
+                        refresh_token
+                    });
+
+                    if (error) throw error;
+                    log("Sessão aplicada com sucesso.");
+
+                    // Limpa a URL imediatamente (Lição 3)
+                    window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+                    log("URL limpa.");
+                } catch (err) {
+                    console.error("Erro ao aplicar sessão SSO:", err);
+                }
+            }
+        } else {
+            log("Nenhum token na URL. Prosseguindo...");
+        }
+    })();
+
+    await initPromise;
+    console.groupEnd();
+    return;
 }
 
 /**
@@ -54,35 +80,52 @@ export async function handleSSOCheck(supabase) {
 export async function protectRoute(supabase, appId, portalUrl = 'https://rock-portal-v1.netlify.app') {
     if (isRedirecting) return false;
 
-    // NOVIDADE: Verifica e aplica o token SSO se ele existir na URL antes de checar o usuário.
-    // Isso evita que o App redirecione de volta para o portal enquanto o Supabase ainda processa a sessão.
-    await handleSSOCheck(supabase);
+    try {
+        // 1. Processa token se existir (aguarda trava de segurança)
+        await handleSSOCheck(supabase);
 
-    const { data: { user } } = await supabase.auth.getUser();
+        // 2. Tenta pegar sessão local (instantâneo) antes de ir para a rede
+        log("Checando usuário...");
+        const { data: { session } } = await supabase.auth.getSession();
+        let user = session?.user;
 
-    // Se não há usuário, manda para o portal
-    if (!user) {
-        redirectToPortal(portalUrl, appId);
+        // Se não tem sessão local, tenta o getUser (rede) como fallback
+        if (!user) {
+            log("Sessão local não encontrada, tentando rede...");
+            const { data: { user: networkUser } } = await supabase.auth.getUser();
+            user = networkUser;
+        }
+
+        // Se não há usuário, manda para o portal
+        if (!user) {
+            log("Nenhum usuário logado. Redirecionando para o portal...");
+            redirectToPortal(portalUrl, appId);
+            return false;
+        }
+
+        // 3. Valida permissão centralizada no banco (RPC)
+        log(`Validando acesso para o app: ${appId}`);
+        const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
+            p_user_id: user.id,
+            p_app_id: appId
+        });
+
+        if (error || !hasAccess) {
+            console.warn("Acesso Negado: Usuário sem permissão central.");
+
+            // Logoff "Fire and Forget"
+            supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
+
+            redirectToPortal(portalUrl, appId, 'unauthorized');
+            return false;
+        }
+
+        log("Acesso autorizado!");
+        return true;
+    } catch (err) {
+        console.error("Erro crítico na proteção de rota:", err);
         return false;
     }
-
-    // Valida permissão centralizada no banco (RPC)
-    const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
-        p_user_id: user.id,
-        p_app_id: appId
-    });
-
-    if (error || !hasAccess) {
-        console.warn("Acesso Negado: Usuário sem permissão para este App.");
-
-        // Logoff "Fire and Forget"
-        supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
-
-        redirectToPortal(portalUrl, appId, 'unauthorized');
-        return false;
-    }
-
-    return true; // Acesso liberado
 }
 
 /**

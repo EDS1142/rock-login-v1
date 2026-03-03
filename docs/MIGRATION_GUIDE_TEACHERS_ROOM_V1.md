@@ -83,6 +83,8 @@ useEffect(() => {
         if (ok) setLoading(false);
     });
 }, []);
+
+if (loading) return <div>Verificando permissões... (Consulte o console F12 em caso de erro)</div>;
 ```
 
 ---

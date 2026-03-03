@@ -90,12 +90,11 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        protectRoute(supabase, 'rockrema-v2').then(ok => {
-            if (ok) setLoading(false);
-        });
+        protectRoute(supabase, 'rockrema-v2')
+            .then(ok => { if (ok) setLoading(false); });
     }, []);
 
-    if (loading) return <div>Carregando...</div>;
+    if (loading) return <div>Verificando acesso (veja o Console F12 se travar)...</div>;
     return <ConteudoDoApp />;
 }
 ```

@@ -89,6 +89,8 @@ useEffect(() => {
         if (ok) setLoading(false);
     });
 }, []);
+
+if (loading) return <div>Validando acesso... (Abra o Console F12 se persistir)</div>;
 ```
 
 ---

@@ -81,34 +81,39 @@ Para resolver definitivamente problemas de looping e carregamento, siga estes 2 
 ### Passo 1: Criar o arquivo de utilitários
 Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo integral de [auth-standard-integration.js](auth-standard-integration.js).
 
-### Passo 2: Proteger o App e tratar o carregamento
-No seu arquivo principal (ex: `App.jsx` ou `App.tsx`), utilize o estado de `loading` para esperar a verificação. A função `protectRoute` agora cuida sozinha de processar o token e limpar a URL.
+### Passo 2: Proteger o App e Diagnosticar
+No seu arquivo principal (ex: `App.jsx`), utilize o código abaixo. Abra o **Console do Navegador (F12)** para ver os logs em tempo real.
 
 ```javascript
 import { protectRoute } from './auth-utils';
 
 function App() {
-    const [isAuthorized, setIsAuthorized] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function check() {
-            // Tenta processar token e validar acesso. 
-            // Se falhar, a própria função redireciona para o portal.
-            const ok = await protectRoute(supabase, 'regua-comunicacao-v2');
-            if (ok) {
-                setIsAuthorized(true);
-                setLoading(false);
-            }
-        }
-        check();
+        // protectRoute V3: TUDO-EM-UM (Locking + URL Cleanup + Access Check)
+        protectRoute(supabase, 'regua-comunicacao-v2')
+            .then(ok => { if (ok) setLoading(false); })
+            .catch(err => console.error("Falha crítica no App:", err));
     }, []);
 
-    if (loading) return <div>Verificando acesso...</div>;
+    if (loading) return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h2>Verificando acesso...</h2>
+            <p>Se esta tela não sumir, verifique o Console (F12).</p>
+        </div>
+    );
 
     return <ConteudoDoApp />;
 }
 ```
+
+## 6. Diagnóstico de Problemas (Debug)
+
+Se o App continuar travado no "Verificando acesso":
+1. **Limpe o Cache:** Tokens antigos no `localStorage` podem causar conflitos. Use `Ctrl+F5` ou limpe o armazenamento local.
+2. **Confira o Console (F12):** Procure por `[AUTH ...]` ou `🔐 Auth Check`.
+3. **Rede (Network):** Verifique se as chamadas para `itxkgfkdxganjidnaall.supabase.co` estão retornando `200 OK`.
 
 ## 6. Lições Aprendidas (Importante)
 
