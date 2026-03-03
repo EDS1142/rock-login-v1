@@ -67,4 +67,21 @@ Se você (desenvolvedor ou IA) estiver aplicando essa migração na base de cód
 5. [ ] **Gitignore:** Garantir que credenciais e variáveis sensíveis seguem seguras no `.env` e não foram expostas após as mudanças.
 
 ---
+
+## 6. Lições Aprendidas
+
+### O que aprendemos?
+
+**1. Race Conditions e Efeitos Colaterais (Loop Infinito):**
+Na teoria, fazer "signOut" e trocar o "window.location" assim que `hasAppAccess === false` era simples. Na prática, o React ao ver que sumiu o user, dispara o ciclo de vida do componente de Login junto com os useEffect de Auth. Esses componentes se cruzam em milissegundos tentando te enviar pro Portal de jeitos diferentes (para a Raiz vs Parametrizando o Erro).
+**Solução:** Centralizamos a ordem de redirecionamento no roteador/páginas com travas (ex: `useRef` flag = verdadeiro) impedindo que comandos idênticos engolissem o outro.
+
+**2. O Congelamento (Deadlock) de "Timeouts" no `signOut`:**
+Quando te expulsarmos porque você não tem acesso, a teoria diz: "Faz signOut seguro aguardando o Supabase e depois te devolve." Mas, vimos que tentar esperar (via `await`) pela resposta de log-off num fluxo onde a rede pode engasgar causa o congelamento de tela. A tela fica carregando para sempre porque a linha que muda de fato o link nunca era alcançada se a promessa do Supabase falhasse ou travasse.
+**Solução:** Agora tratamos o log-off forçado como Fire and Forget anexando `.catch()`. Ele avisa o servidor para deslogar daquela chave, e não perde mais tempo esperando, batendo imediatamente no Portal principal exibindo sua mensagem de erro.
+
+**3. Vazamento de Tokens e Quebra de History na URL:**
+Uma regra de ouro extra adicionada (também presente nos fixes): Uma vez que passamos o parâmetro `sso_access=TOKEN_X` pela URL e processamos ele no aplicativo local (Régua), é obrigatório apagar o Hash da aba do navegador usando regras nativas do `window.history.replaceState`. Se isso ficasse visível, o primeiro "refresh" ou botão F5 ia causar duplo processamento do frame de Autenticação gerando logs conflitantes e atrapalhando a liberação final de login.
+
+---
 © 2026 Rock Education System - Engenharia de Dados

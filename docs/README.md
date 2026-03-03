@@ -53,9 +53,9 @@ Identificamos os seguintes aplicativos ativos que utilizam o banco compartilhado
 2.  **student-abcd** (`alunos`, `turmas_`): Portal do acadêmico.
 3.  **rock-recibo-v4** (`rc_`, `rec_`): Emissão de recibos.
 4.  **rockrema-v2** (`rema_`): Gestão de rematrículas.
-5.  **rock-cancel-v1** (`cancel_`): Solicitações de cancelamento.
+5.  **rock-cancel-v1** (`cancel_`): Solicitações de cancelamento. [[Guia de Migração](MIGRATION_GUIDE_ROCK_CANCEL_V1.md)]
 6.  **rock-reposicoes-v1** (`repo_`): Controle de reposições.
-7.  **regua-comunicacao-v2** (`rg_`): Comunicação e templates.
+7.  **regua-comunicacao-v2** (`rg_`): Comunicação e templates. [[Guia de Migração](MIGRATION_GUIDE_REGUA_COMUNICACAO_V2.md)]
 8.  **compras-manutencao-v1** (`buy_`): Gestão de compras.
 9.  **teachers-room-v1** (`tr_`): Portal dos professores. [[Guia de Migração](MIGRATION_GUIDE_TEACHERS_ROOM_V1.md)]
 10. **rockpg-turmas-v3** (`app_`): Gestão administrativa central.
@@ -122,16 +122,26 @@ const { data: userRole } = await supabase.rpc('get_user_app_role', {
 // Retorna: 'Admin', 'Teacher', 'Pedagógico', etc.
 ```
 
+### 4. Padrão para Novos Guias de Migração
+Todo novo guia de migração gerado deve prever e registrar explicitamente:
+1. **Quais emails, grupos ou perfis de usuário terão acesso inicial ao aplicativo.** O(s) responsável(is) pela criação do guia devem **sempre perguntar** ao requisitante essa informação antes de finalizar a documentação e já formatar os emails/perfis pré-aprovados na carga do guia.
+2. **Revisão das Lições Aprendidas:** Consultar ativamente a seção de Resolução de Problemas e Armadilhas abaixo (especialmente sobre *Race Conditions*, *Deadlocks* e *Vazamento de Tokens*) para atestar que o app alvo está aderente aos novos padrões de estabilidade baseados em casos reais do piloto.
+
 ---
 
-## ⚠️ Resolução de Problemas e Armadilhas
+## ⚠️ Resolução de Problemas, Armadilhas e Lições Aprendidas
 
-### 1. O Perigo do `await` no `onAuthStateChange`
-**NUNCA** use `async/await` diretamente dentro do callback do `supabase.auth.onAuthStateChange`. Isso pode travar o motor de autenticação.
-*   **Solução:** Use o callback apenas para atualizar um estado local e utilize um `useEffect` (ou equivalente) para reagir a essa mudança e realizar as chamadas assíncronas ao banco.
+### 1. O Perigo do `await` no `onAuthStateChange` e Race Conditions (Loops)
+**NUNCA** use `async/await` diretamente dentro do callback do `supabase.auth.onAuthStateChange`. Isso pode travar o motor de autenticação. Ao disparar callbacks enquanto useEffects tentam fazer redirecionamentos em paralelo (como em casos de SSO), podem ocorrer **Race Conditions**, criando um *Loop Infinito* de redirecionamentos cruzados.
+*   **Solução:** Centralize a ordem no roteador/páginas com travas. Use o callback apenas para atualizar um estado local e utilize um `useEffect` com bloqueios (como um `useRef` ativando flag = true) impedindo que comandos idênticos engulam o outro.
 
-### 2. Evitando o "Access Token Devoured"
-Ao redirecionar do Portal para o App, use parâmetros de hash customizados (como `sso_access`) em vez do padrão `access_token`. Isso impede que a biblioteca cliente do Supabase no app de destino apague o token da URL antes que você possa confirmá-lo e processar a lógica de permissão (RPC).
+### 2. O Congelamento (Deadlock) de "Timeouts" no `signOut`
+Quando um usuário for expulso do sistema por não ter permissão, tentar rodar `await supabase.auth.signOut()` pode causar congelamento de tela para sempre (deadlock) caso a intermitência de rede falhe a promessa. A linha que muda o link de redirect nunca seria alcançada.
+*   **Solução:** Trate o log-off forçado como *Fire and Forget* anestesiado por um `.catch()`. Ele avisa o servidor em *background* para deslogar da chave e não perde tempo rodando `await`, procedendo imediatamente para o redirecionamento ao Portal principal.
+
+### 3. Vazamento de Tokens e Quebra de History na URL ("Access Token Devoured")
+Ao usar parâmetros de hash customizados (como `sso_access`) que evitam que a biblioteca cliente do Supabase os consuma precocemente, você herda o problema do rastro. É mandatório apagar esse Hash da aba quando processado. Se ele ficar visível, o primeiro botão F5 do usuário acionará duplo processamento.
+*   **Solução:** Use regras nativas como `window.history.replaceState` para limpar a URL do navegador ativamente assim que a checagem de SSO for validada localmente.
 
 
 ---
