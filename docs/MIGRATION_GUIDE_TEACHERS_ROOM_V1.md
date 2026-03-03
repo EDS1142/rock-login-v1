@@ -71,20 +71,33 @@ const { data: profile } = await supabase
 
 ## 5. Passo a Passo de Implementação (Padrão Unificado)
 
+Para evitar os problemas comuns de looping, utilize o padrão **Bulletproof V3.2**:
+
 ### Passo 1: Arquivo de utilitários
-Crie o `auth-utils.js` com o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+Crie o `auth-utils.js` com o conteúdo integral de [auth-standard-integration.js](auth-standard-integration.js).
 
 ### Passo 2: Proteção no App.jsx
 ```javascript
 import { protectRoute } from './auth-utils';
 
-useEffect(() => {
-    protectRoute(supabase, 'teachers-room-v1').then(ok => {
-        if (ok) setLoading(false);
-    });
-}, []);
+function App() {
+    const [loading, setLoading] = useState(true);
 
-if (loading) return <div>Verificando permissões... (Consulte o console F12 em caso de erro)</div>;
+    useEffect(() => {
+        // Validação TUDO-EM-UM para Teachers Room
+        protectRoute(supabase, 'teachers-room-v1')
+            .then(ok => { if (ok) setLoading(false); });
+    }, []);
+
+    if (loading) return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h2>Verificando permissões de acesso...</h2>
+            <p>Se demorar, verifique mensagens no Console do Navegador (F12).</p>
+        </div>
+    );
+
+    return <ConteudoDoApp />;
+}
 ```
 
 ---

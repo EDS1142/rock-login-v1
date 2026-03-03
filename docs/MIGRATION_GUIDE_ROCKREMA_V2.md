@@ -79,10 +79,14 @@ const { data: userRole } = await supabase.rpc('get_user_app_role', {
 
 ## 5. Passo a Passo de Implementação (Padrão Unificado)
 
-### Passo 1: Arquivo de utilitários
-Crie o `auth-utils.js` com o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+Para resolver definitivamente problemas de looping e travamentos, utilize o padrão **Bulletproof V3.2**:
 
-### Passo 2: Proteção no App.jsx
+### Passo 1: Criar o arquivo de utilitários
+Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo integral de [auth-standard-integration.js](auth-standard-integration.js).
+
+### Passo 2: Proteger o App e Diagnosticar
+No seu arquivo principal (ex: `App.jsx`), utilize o código abaixo. Abra o **Console do Navegador (F12)** para ver os logs em tempo real.
+
 ```javascript
 import { protectRoute } from './auth-utils';
 
@@ -90,14 +94,29 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // protectRoute V3.2: TUDO-EM-UM (Com Escape de página de login)
         protectRoute(supabase, 'rockrema-v2')
-            .then(ok => { if (ok) setLoading(false); });
+            .then(ok => { if (ok) setLoading(false); })
+            .catch(err => console.error("Falha crítica no App:", err));
     }, []);
 
-    if (loading) return <div>Verificando acesso (veja o Console F12 se travar)...</div>;
+    if (loading) return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h2>Verificando acesso...</h2>
+            <p>Se esta tela não sumir, verifique o Console (F12).</p>
+        </div>
+    );
+
     return <ConteudoDoApp />;
 }
 ```
+
+## 6. Diagnóstico de Problemas (Debug)
+
+Se o App continuar travado no "Verificando acesso":
+1. **Limpe o Cache:** Tokens antigos no `localStorage` podem causar conflitos. Use `Ctrl+F5` ou limpe o armazenamento local/site data.
+2. **Confira o Console (F12):** Procure por logs iniciados com `[AUTH ...]` ou `🔐 Auth Check`.
+3. **Rede (Network):** Verifique se as chamadas para o Supabase estão retornando `200 OK`.
 
 ---
 © 2026 Rock Education System - Engenharia de Dados

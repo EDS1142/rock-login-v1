@@ -77,20 +77,35 @@ Certifique-se de que a aplicação esteja utilizando as chaves (URL e Anon Key) 
 
 ## 5. Passo a Passo de Implementação (Padrão Unificado)
 
+Para máxima estabilidade, utilize o padrão **Bulletproof V3.2**:
+
 ### Passo 1: Arquivo de utilitários
-Crie o `auth-utils.js` com o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+Crie o `auth-utils.js` com o conteúdo integral de [auth-standard-integration.js](auth-standard-integration.js).
 
 ### Passo 2: Proteção no App.jsx
+No seu ponto central de controle (ex: `App.jsx`):
+
 ```javascript
 import { protectRoute } from './auth-utils';
 
-useEffect(() => {
-    protectRoute(supabase, 'rock-cancel-v1').then(ok => {
-        if (ok) setLoading(false);
-    });
-}, []);
+function App() {
+    const [loading, setLoading] = useState(true);
 
-if (loading) return <div>Validando acesso... (Abra o Console F12 se persistir)</div>;
+    useEffect(() => {
+        // protectRoute V3.2: Gerencia Tokens, URL, Banco e Escape de página de login
+        protectRoute(supabase, 'rock-cancel-v1')
+            .then(ok => { if (ok) setLoading(false); });
+    }, []);
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h2>Validando acesso...</h2>
+            <p>Aguarde um momento. Consulte o Console (F12) se persistir.</p>
+        </div>
+    );
+
+    return <ConteudoDoApp />;
+}
 ```
 
 ---
