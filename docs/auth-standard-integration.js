@@ -27,8 +27,11 @@ const log = (msg, data = null) => {
  * @param {object} supabase - Instância do cliente Supabase
  */
 export async function handleSSOCheck(supabase) {
-    // Se já estiver inicializando, aguarda a promessa existente (Lock de módulo)
-    if (initPromise) {
+    const hash = window.location.hash;
+    const hasNewToken = hash && hash.includes('sso_access=');
+
+    // Se já houver um lock mas detectarmos um NOVO token, resetamos para processar o novo
+    if (initPromise && !hasNewToken) {
         log("Aguardando inicialização paralela...");
         return initPromise;
     }
@@ -37,8 +40,7 @@ export async function handleSSOCheck(supabase) {
         console.group("🔐 Auth Check: Verificando Sessão");
         log("Iniciando verificação...");
 
-        const hash = window.location.hash;
-        if (hash && hash.includes('sso_access=')) {
+        if (hasNewToken) {
             log("Token detectado na URL. Aplicando sessão...");
             const params = new URLSearchParams(hash.substring(1));
             const access_token = params.get('sso_access');
@@ -62,7 +64,7 @@ export async function handleSSOCheck(supabase) {
                 }
             }
         } else {
-            log("Nenhum token na URL. Prosseguindo...");
+            log("Nenhum token novo na URL. Prosseguindo...");
         }
     })();
 
@@ -121,6 +123,11 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
         }
 
         log("Acesso autorizado!");
+
+        // Pequena pausa (microtask) para garantir que o router e o Supabase terminem de sincronizar
+        // antes de remover a tela de loading. Resolve o problema de "spinner persistente" em apps React.
+        await new Promise(resolve => setTimeout(resolve, 50));
+
         return true;
     } catch (err) {
         console.error("Erro crítico na proteção de rota:", err);
