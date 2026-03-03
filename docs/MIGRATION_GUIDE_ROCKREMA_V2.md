@@ -52,9 +52,8 @@ async function verifyAccess(userId) {
     });
 
     if (error || !hasAccess) {
-        // Usuário não tem permissão - log-off "Fire and forget" e manda de volta
-        // Não usamos await no signOut para evitar Deadlock em caso de falha de rede.
-        supabase.auth.signOut().catch(() => {});
+        // Logoff "Fire and forget" para evitar travamento (Deadlock)
+        supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
         
         window.location.href = 'https://rock-portal-v1.netlify.app/?app=rockrema-v2&error=unauthorized';
         return;

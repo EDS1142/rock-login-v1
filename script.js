@@ -120,7 +120,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (allowsLegacy && !allowsCentral) {
                     console.warn("MIGRAÇÃO: Usuário tem acesso legado mas não centralizado.");
-                    await supabase.from('app_security_audit').insert({
+
+                    // Fire and forget audit - Usamos .then pois o builder do Supabase pode não ter .catch direto
+                    supabase.from('app_security_audit').insert({
                         event_type: 'mismatch_detected',
                         user_id: user.id,
                         app_id: targetApp.id,
@@ -129,13 +131,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                             central_access: false,
                             userAgent: navigator.userAgent
                         }
-                    }).catch(console.error); // Fire and forget audit
+                    }).then(({ error }) => { if (error) console.error("Audit error:", error); });
                 }
 
                 // 4. Conclusão do Login
                 if (!allowsLegacy && !allowsCentral) {
                     // Logoff imediato para limpar sessão inválida no portal antes de avisar o erro
-                    await supabase.auth.signOut().catch(() => { });
+                    await supabase.auth.signOut();
                     throw new Error(`Acesso Negado: Você não tem permissão para acessar o sistema "${targetApp.name}".`);
                 }
 

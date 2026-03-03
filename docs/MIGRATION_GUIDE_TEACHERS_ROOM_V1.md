@@ -48,7 +48,7 @@ async function verifyTeacherAccess(userId) {
 
     if (error || !hasAccess) {
         // Logoff "Fire and Forget" para evitar travamento
-        supabase.auth.signOut().catch(() => {});
+        supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
         
         window.location.href = 'https://rock-login-v1.netlify.app/?app=teachers-room-v1&error=unauthorized';
         return false;

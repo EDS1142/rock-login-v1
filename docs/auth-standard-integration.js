@@ -72,8 +72,7 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
         console.warn("Acesso Negado: Usuário sem permissão para este App.");
 
         // Logoff "Fire and Forget" para evitar travamento (Deadlock)
-        // Não usamos await aqui para não bloquear o redirecionamento.
-        supabase.auth.signOut().catch(() => { });
+        supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
 
         redirectToPortal(portalUrl, appId, 'unauthorized');
         return false;

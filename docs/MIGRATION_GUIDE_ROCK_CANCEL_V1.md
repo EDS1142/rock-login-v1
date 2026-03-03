@@ -60,7 +60,7 @@ async function verifyCancelAccess(userId) {
 
     if (error || !hasAccess) {
         // Usuário não tem permissão - log-off "Fire and forget" e manda de volta
-        supabase.auth.signOut().catch(() => {});
+        supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
         
         window.location.href = 'https://rock-login-v1.netlify.app/?app=rock-cancel-v1&error=unauthorized';
         return false;
