@@ -52,7 +52,11 @@ export async function handleSSOCheck(supabase) {
  * @param {string} portalUrl - URL do portal de login para redirecionamento
  */
 export async function protectRoute(supabase, appId, portalUrl = 'https://rock-portal-v1.netlify.app') {
-    if (isRedirecting) return;
+    if (isRedirecting) return false;
+
+    // NOVIDADE: Verifica e aplica o token SSO se ele existir na URL antes de checar o usuário.
+    // Isso evita que o App redirecione de volta para o portal enquanto o Supabase ainda processa a sessão.
+    await handleSSOCheck(supabase);
 
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -71,7 +75,7 @@ export async function protectRoute(supabase, appId, portalUrl = 'https://rock-po
     if (error || !hasAccess) {
         console.warn("Acesso Negado: Usuário sem permissão para este App.");
 
-        // Logoff "Fire and Forget" para evitar travamento (Deadlock)
+        // Logoff "Fire and Forget"
         supabase.auth.signOut().then(({ error }) => { if (error) console.error(error); });
 
         redirectToPortal(portalUrl, appId, 'unauthorized');

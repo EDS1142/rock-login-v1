@@ -74,33 +74,40 @@ Se você (desenvolvedor ou IA) estiver aplicando essa migração na base de cód
 
 ---
 
-## 5. Passo a Passo de Implementação (Padrão Estável)
+## 5. Passo a Passo de Implementação (Padrão Unificado)
 
-Para garantir que o app não entre em loop e a sessão seja carregada corretamente, siga estes 3 passos:
+Para resolver definitivamente problemas de looping e carregamento, siga estes 2 passos:
 
 ### Passo 1: Criar o arquivo de utilitários
-Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo integral de [auth-standard-integration.js](auth-standard-integration.js).
 
-### Passo 2: Capturar a sessão no início do App
-No seu arquivo principal (ex: `App.jsx` ou `main.jsx`), adicione:
-
-```javascript
-import { handleSSOCheck } from './auth-utils';
-
-// Logo no início da execução
-handleSSOCheck(supabase);
-```
-
-### Passo 3: Proteger as rotas
-No componente que controla o acesso (ou no seu `Layout`), use a função `protectRoute`:
+### Passo 2: Proteger o App e tratar o carregamento
+No seu arquivo principal (ex: `App.jsx` ou `App.tsx`), utilize o estado de `loading` para esperar a verificação. A função `protectRoute` agora cuida sozinha de processar o token e limpar a URL.
 
 ```javascript
 import { protectRoute } from './auth-utils';
 
-useEffect(() => {
-    // Substitua 'regua-comunicacao-v2' pelo ID correto se necessário
-    protectRoute(supabase, 'regua-comunicacao-v2', 'https://rock-login-v1.netlify.app');
-}, []);
+function App() {
+    const [isAuthorized, setIsAuthorized] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function check() {
+            // Tenta processar token e validar acesso. 
+            // Se falhar, a própria função redireciona para o portal.
+            const ok = await protectRoute(supabase, 'regua-comunicacao-v2');
+            if (ok) {
+                setIsAuthorized(true);
+                setLoading(false);
+            }
+        }
+        check();
+    }, []);
+
+    if (loading) return <div>Verificando acesso...</div>;
+
+    return <ConteudoDoApp />;
+}
 ```
 
 ## 6. Lições Aprendidas (Importante)

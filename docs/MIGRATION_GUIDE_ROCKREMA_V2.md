@@ -77,28 +77,27 @@ const { data: userRole } = await supabase.rpc('get_user_app_role', {
 
 ## 4. Checklist para a IA de Migração
 
-## 5. Passo a Passo de Implementação (Padrão Estável)
+## 5. Passo a Passo de Implementação (Padrão Unificado)
 
-### Passo 1: Criar o arquivo de utilitários
-Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+### Passo 1: Arquivo de utilitários
+Crie o `auth-utils.js` com o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
 
-### Passo 2: Capturar a sessão no início do App
-No seu arquivo principal (ex: `App.jsx` ou `main.jsx`), adicione:
-
-```javascript
-import { handleSSOCheck } from './auth-utils';
-handleSSOCheck(supabase);
-```
-
-### Passo 3: Proteger as rotas
-No componente que controla o acesso, use a função `protectRoute`:
-
+### Passo 2: Proteção no App.jsx
 ```javascript
 import { protectRoute } from './auth-utils';
 
-useEffect(() => {
-    protectRoute(supabase, 'rockrema-v2', 'https://rock-portal-v1.netlify.app');
-}, []);
+function App() {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        protectRoute(supabase, 'rockrema-v2').then(ok => {
+            if (ok) setLoading(false);
+        });
+    }, []);
+
+    if (loading) return <div>Carregando...</div>;
+    return <ConteudoDoApp />;
+}
 ```
 
 ---

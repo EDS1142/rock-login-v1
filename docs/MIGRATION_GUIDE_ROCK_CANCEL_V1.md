@@ -75,29 +75,19 @@ Certifique-se de que a aplicação esteja utilizando as chaves (URL e Anon Key) 
 
 ---
 
----
+## 5. Passo a Passo de Implementação (Padrão Unificado)
 
-## 5. Passo a Passo de Implementação (Padrão Estável)
+### Passo 1: Arquivo de utilitários
+Crie o `auth-utils.js` com o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
 
-### Passo 1: Criar o arquivo de utilitários
-Crie um arquivo chamado `auth-utils.js` e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
-
-### Passo 2: Capturar a sessão no início do App
-No seu arquivo principal, adicione:
-
-```javascript
-import { handleSSOCheck } from './auth-utils';
-handleSSOCheck(supabase);
-```
-
-### Passo 3: Proteger as rotas
-No componente que controla o acesso, use a função `protectRoute`:
-
+### Passo 2: Proteção no App.jsx
 ```javascript
 import { protectRoute } from './auth-utils';
 
 useEffect(() => {
-    protectRoute(supabase, 'rock-cancel-v1', 'https://rock-login-v1.netlify.app');
+    protectRoute(supabase, 'rock-cancel-v1').then(ok => {
+        if (ok) setLoading(false);
+    });
 }, []);
 ```
 
