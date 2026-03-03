@@ -103,19 +103,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const user = authData.user;
 
                 // 2. Dual-Check (Validação Legada vs Centralizada)
-                // Checagem Legada (profiles)
-                const { data: legacyProfile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
+                btn.innerHTML = `<span class="loader"></span> Verificando acesso...`;
 
-                // Checagem Centralizada
-                const { data: hasCentralAccess } = await supabase
-                    .rpc('check_app_access', {
-                        p_user_id: user.id,
-                        p_app_id: targetApp.id
-                    });
+                // Chamadas paralelas para otimizar tempo
+                const [legacyCheck, centralCheck] = await Promise.all([
+                    supabase.from('profiles').select('role').eq('id', user.id).single(),
+                    supabase.rpc('check_app_access', { p_user_id: user.id, p_app_id: targetApp.id })
+                ]);
+
+                const legacyProfile = legacyCheck.data;
+                const hasCentralAccess = centralCheck.data;
 
                 // 3. Lógica de Segurança (Audit Mode)
                 const allowsLegacy = !!legacyProfile;
@@ -127,35 +124,45 @@ document.addEventListener('DOMContentLoaded', async () => {
                         event_type: 'mismatch_detected',
                         user_id: user.id,
                         app_id: targetApp.id,
-                        details: { legacy_role: legacyProfile?.role, central_access: false }
-                    });
+                        details: {
+                            legacy_role: legacyProfile?.role,
+                            central_access: false,
+                            userAgent: navigator.userAgent
+                        }
+                    }).catch(console.error); // Fire and forget audit
                 }
 
                 // 4. Conclusão do Login
                 if (!allowsLegacy && !allowsCentral) {
+                    // Logoff imediato para limpar sessão inválida no portal antes de avisar o erro
+                    await supabase.auth.signOut().catch(() => { });
                     throw new Error(`Acesso Negado: Você não tem permissão para acessar o sistema "${targetApp.name}".`);
                 }
 
-                console.log("Login bem sucedido.");
+                console.log("Login bem sucedido. Redirecionando...");
+                btn.innerHTML = `<span class="loader"></span> Iniciando ${targetApp.name}...`;
 
                 // Redirecionamento com sessão
-                // Como os apps estão em domínios diferentes, precisamos passar a sessão via URL
                 const session = authData.session;
                 if (targetApp.url && session) {
                     const redirectUrl = new URL(targetApp.url);
-                    // Uso de chaves "sso_" para impedir que o gotrue-js devore a hash prematuramente sem os params corretos
+                    // Uso de chaves "sso_" para impedir que o gotrue-js devore a hash prematuramente
                     redirectUrl.hash = `sso_access=${session.access_token}&sso_refresh=${session.refresh_token}`;
-                    window.location.href = redirectUrl.toString();
+
+                    // Pequeno delay para o usuário ver o feedback de sucesso antes do redirecionamento
+                    setTimeout(() => {
+                        window.location.href = redirectUrl.toString();
+                    }, 500);
                 } else if (targetApp.url) {
                     window.location.href = targetApp.url;
                 } else {
+                    btn.innerHTML = `<span>Logado!</span>`;
                     alert(`Sucesso! Você agora está logado no ecossistema Rock Team. (App: ${targetApp.name})`);
                 }
 
             } catch (err) {
                 console.error(err);
                 alert(err.message || "Erro ao realizar login");
-            } finally {
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
             }

@@ -122,10 +122,14 @@ const { data: userRole } = await supabase.rpc('get_user_app_role', {
 // Retorna: 'Admin', 'Teacher', 'Pedagógico', etc.
 ```
 
-### 4. Padrão para Novos Guias de Migração
+### 4. Padrão para Novos Guias de Migração e Integrações Rápidas
 Todo novo guia de migração gerado deve prever e registrar explicitamente:
 1. **Quais emails, grupos ou perfis de usuário terão acesso inicial ao aplicativo.** O(s) responsável(is) pela criação do guia devem **sempre perguntar** ao requisitante essa informação antes de finalizar a documentação e já formatar os emails/perfis pré-aprovados na carga do guia.
-2. **Revisão das Lições Aprendidas:** Consultar ativamente a seção de Resolução de Problemas e Armadilhas abaixo (especialmente sobre *Race Conditions*, *Deadlocks* e *Vazamento de Tokens*) para atestar que o app alvo está aderente aos novos padrões de estabilidade baseados em casos reais do piloto.
+2. **Revisão das Lições Aprendidas:** Consultar ativamente a seção de Resolução de Problemas e Armadilhas abaixo (especialmente sobre *Race Conditions*, *Deadlocks* e *Vazamento de Tokens*).
+
+> [!TIP]
+> **Utilize o Boilerplate Oficial:** Para implementar a integração de forma rápida e segura, utilize as funções utilitárias em [auth-standard-integration.js](auth-standard-integration.js). Ele já inclui travas de redirecionamento e limpeza de URL.
+
 
 ---
 

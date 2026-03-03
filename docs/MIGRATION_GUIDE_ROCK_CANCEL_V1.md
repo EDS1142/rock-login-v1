@@ -47,16 +47,22 @@ if (window.location.hash.includes('sso_access=')) {
 }
 
 async function verifyCancelAccess(userId) {
-    // Valida permissão centralizada no banco (BD_Geral)
+    // 1. Limpeza Imediata da URL (Ver Lição 3 no README)
+    if (window.location.hash.includes('sso_access=')) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
+
+    // 2. Valida permissão centralizada no banco (BD_Geral)
     const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
         p_user_id: userId,
         p_app_id: 'rock-cancel-v1'
     });
 
     if (error || !hasAccess) {
-        // Usuário não tem permissão - log-off "Fire and forget" e manda de volta (Ver Lição 2)
-        supabase.auth.signOut().catch(console.error);
-        window.location.href = 'https://rock-login-v1.netlify.app/?error=unauthorized';
+        // Usuário não tem permissão - log-off "Fire and forget" e manda de volta
+        supabase.auth.signOut().catch(() => {});
+        
+        window.location.href = 'https://rock-login-v1.netlify.app/?app=rock-cancel-v1&error=unauthorized';
         return false;
     }
     
@@ -69,14 +75,31 @@ Certifique-se de que a aplicação esteja utilizando as chaves (URL e Anon Key) 
 
 ---
 
-## 5. Checklist de Implementação
-Se você estiver aplicando essa migração na base de código do Rock Cancel V1, atente-se a:
+---
 
-1. [ ] Remover a UI de login local (se houver) e alterar a rota principal para atuar como um middleware de redirecionamento.
-2. [ ] Configurar a captura e *parsing* da sessão oriunda do portal no formato `#sso_access=...`.
-3. [ ] Limpar ativamente o fragmento da URL usando `window.history.replaceState` no momento em que a sessão é confirmada.
-4. [ ] Implementar a trava de acesso utilizando a RPC `check_app_access`, barrando renderizações até obter a confirmação.
-5. [ ] **Gitignore:** Garantir que credenciais e variáveis sensíveis seguem seguras no `.env` e não foram expostas após as mudanças.
+## 5. Passo a Passo de Implementação (Padrão Estável)
+
+### Passo 1: Criar o arquivo de utilitários
+Crie um arquivo chamado `auth-utils.js` e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+
+### Passo 2: Capturar a sessão no início do App
+No seu arquivo principal, adicione:
+
+```javascript
+import { handleSSOCheck } from './auth-utils';
+handleSSOCheck(supabase);
+```
+
+### Passo 3: Proteger as rotas
+No componente que controla o acesso, use a função `protectRoute`:
+
+```javascript
+import { protectRoute } from './auth-utils';
+
+useEffect(() => {
+    protectRoute(supabase, 'rock-cancel-v1', 'https://rock-login-v1.netlify.app');
+}, []);
+```
 
 ---
 

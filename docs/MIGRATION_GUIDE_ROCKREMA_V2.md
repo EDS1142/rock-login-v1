@@ -39,22 +39,25 @@ Mesmo que o usuário consiga logar com sucesso no Supabase, o aplicativo **DEVE*
 Adicione este código no seu fluxo de inicialização/sessão:
 
 ```javascript
-async function verifyAccess() {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (user) {
-        // PERGUNTA AO PORTAL: "Este usuário pode entrar aqui?"
-        const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
-            p_user_id: user.id,
-            p_app_id: 'rockrema-v2' // ID deste app
-        });
+async function verifyAccess(userId) {
+    // 1. Limpeza Imediata da URL (Ver Lição 3 no README)
+    if (window.location.hash.includes('sso_access=')) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
 
-        if (error || !hasAccess) {
-            // Se o retorno for FALSE, o usuário está demitido ou não tem acesso aqui
-            await supabase.auth.signOut();
-            window.location.href = 'https://rock-portal-v1.netlify.app/?error=unauthorized';
-            return;
-        }
+    // 2. Valida permissão centralizada no banco (BD_Geral)
+    const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
+        p_user_id: userId,
+        p_app_id: 'rockrema-v2' // ID deste app
+    });
+
+    if (error || !hasAccess) {
+        // Usuário não tem permissão - log-off "Fire and forget" e manda de volta
+        // Não usamos await no signOut para evitar Deadlock em caso de falha de rede.
+        supabase.auth.signOut().catch(() => {});
+        
+        window.location.href = 'https://rock-portal-v1.netlify.app/?app=rockrema-v2&error=unauthorized';
+        return;
     }
 }
 ```
@@ -75,11 +78,29 @@ const { data: userRole } = await supabase.rpc('get_user_app_role', {
 
 ## 4. Checklist para a IA de Migração
 
-Se você é uma IA realizando esta migração, certifique-se de:
-1. [ ] Desativar/Remover a tela de login local deste aplicativo.
-2. [ ] Configurar o redirecionamento automático para o Portal Central.
-3. [ ] Implementar a chamada RPC `check_app_access` na proteção de rotas.
-4. [ ] Garantir que o `supabase-js` esteja configurado para o mesmo projeto Supabase (`BD_Geral`).
+## 5. Passo a Passo de Implementação (Padrão Estável)
+
+### Passo 1: Criar o arquivo de utilitários
+Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+
+### Passo 2: Capturar a sessão no início do App
+No seu arquivo principal (ex: `App.jsx` ou `main.jsx`), adicione:
+
+```javascript
+import { handleSSOCheck } from './auth-utils';
+handleSSOCheck(supabase);
+```
+
+### Passo 3: Proteger as rotas
+No componente que controla o acesso, use a função `protectRoute`:
+
+```javascript
+import { protectRoute } from './auth-utils';
+
+useEffect(() => {
+    protectRoute(supabase, 'rockrema-v2', 'https://rock-portal-v1.netlify.app');
+}, []);
+```
 
 ---
 © 2026 Rock Education System - Engenharia de Dados

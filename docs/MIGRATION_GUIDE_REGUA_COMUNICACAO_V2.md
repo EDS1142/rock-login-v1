@@ -35,16 +35,23 @@ A Régua de Comunicação deve estar preparada para capturar os tokens vindos na
 
 ```javascript
 async function verifyReguaAccess(userId) {
-    // Valida permissão centralizada no banco (BD_Geral)
+    // 1. Limpeza Imediata da URL (Ver Lição 3)
+    if (window.location.hash.includes('sso_access=')) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
+
+    // 2. Valida permissão centralizada no banco (BD_Geral)
     const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
         p_user_id: userId,
         p_app_id: 'regua-comunicacao-v2'
     });
 
     if (error || !hasAccess) {
-        // Usuário não tem permissão p/ usar a Régua - deslogar e mandar de volta
-        await supabase.auth.signOut();
-        window.location.href = 'https://rock-login-v1.netlify.app/?error=unauthorized';
+        // Usuário não tem permissão - log-off "Fire and forget" e manda de volta (Ver Lição 2)
+        // Não usamos await no signOut para evitar Deadlock em caso de falha de rede.
+        supabase.auth.signOut().catch(() => {});
+        
+        window.location.href = 'https://rock-login-v1.netlify.app/?app=regua-comunicacao-v2&error=unauthorized';
         return false;
     }
     
@@ -68,7 +75,36 @@ Se você (desenvolvedor ou IA) estiver aplicando essa migração na base de cód
 
 ---
 
-## 6. Lições Aprendidas
+## 5. Passo a Passo de Implementação (Padrão Estável)
+
+Para garantir que o app não entre em loop e a sessão seja carregada corretamente, siga estes 3 passos:
+
+### Passo 1: Criar o arquivo de utilitários
+Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+
+### Passo 2: Capturar a sessão no início do App
+No seu arquivo principal (ex: `App.jsx` ou `main.jsx`), adicione:
+
+```javascript
+import { handleSSOCheck } from './auth-utils';
+
+// Logo no início da execução
+handleSSOCheck(supabase);
+```
+
+### Passo 3: Proteger as rotas
+No componente que controla o acesso (ou no seu `Layout`), use a função `protectRoute`:
+
+```javascript
+import { protectRoute } from './auth-utils';
+
+useEffect(() => {
+    // Substitua 'regua-comunicacao-v2' pelo ID correto se necessário
+    protectRoute(supabase, 'regua-comunicacao-v2', 'https://rock-login-v1.netlify.app');
+}, []);
+```
+
+## 6. Lições Aprendidas (Importante)
 
 ### O que aprendemos?
 

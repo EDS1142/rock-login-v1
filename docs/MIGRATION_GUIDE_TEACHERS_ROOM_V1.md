@@ -35,18 +35,25 @@ O app deve estar preparado para capturar os tokens vindos via URL Fragment (`#ss
 
 ```javascript
 async function verifyTeacherAccess(userId) {
-    // Valida permissão centralizada
+    // 1. Limpeza Imediata da URL
+    if (window.location.hash.includes('sso_access=')) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
+
+    // 2. Valida permissão centralizada
     const { data: hasAccess, error } = await supabase.rpc('check_app_access', {
         p_user_id: userId,
         p_app_id: 'teachers-room-v1'
     });
 
     if (error || !hasAccess) {
-        await supabase.auth.signOut();
-        window.location.href = 'https://rock-login-v1.netlify.app/?error=unauthorized';
+        // Logoff "Fire and Forget" para evitar travamento
+        supabase.auth.signOut().catch(() => {});
+        
+        window.location.href = 'https://rock-login-v1.netlify.app/?app=teachers-room-v1&error=unauthorized';
         return false;
     }
-    return true;
+    return true; // Acesso liberado
 }
 ```
 
@@ -62,12 +69,29 @@ const { data: profile } = await supabase
 
 ---
 
-## 5. Checklist de Implementação
-1. [ ] Remover/Comentar a tela de login legada (`/login`).
-2. [ ] Implementar captura de hash customizado (`sso_access`).
-3. [ ] Configurar verificador de permissão (RPC `check_app_access`).
-4. [ ] **IMPORTANTE:** Não usar `await` dentro do `onAuthStateChange`.
-5. [ ] Validar se as tabelas com prefixo `tr_` estão acessíveis via RLS para o usuário logado.
+## 5. Passo a Passo de Implementação (Padrão Estável)
+
+### Passo 1: Criar o arquivo de utilitários
+Crie um arquivo chamado `auth-utils.js` (ou `.ts`) e cole o conteúdo de [auth-standard-integration.js](auth-standard-integration.js).
+
+### Passo 2: Capturar a sessão no início do App
+No seu arquivo principal, adicione:
+
+```javascript
+import { handleSSOCheck } from './auth-utils';
+handleSSOCheck(supabase);
+```
+
+### Passo 3: Proteger as rotas
+No componente que controla o acesso, use a função `protectRoute`:
+
+```javascript
+import { protectRoute } from './auth-utils';
+
+useEffect(() => {
+    protectRoute(supabase, 'teachers-room-v1', 'https://rock-login-v1.netlify.app');
+}, []);
+```
 
 ---
 © 2026 Rock Education System - Engenharia de Dados
