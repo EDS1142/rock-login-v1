@@ -137,6 +137,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `rock-cancel-v1` | Direção, Administrativo, Pedagógico |
 | `student-abcd` | Teacher, Administrativo, Direção, Pedagógico |
 | `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
+| `rock-compras-manutencao-v1` | Direção, Administrativo, Pedagógico |
 | `rock-portal-v1` | Direção, Administrativo, Pedagógico, Teacher, Comercial |
 
 > [!NOTE]
