@@ -150,6 +150,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `rockpg-turmas-v3` | Teacher, Administrativo, Direção |
 | `to-do-list-v1` | Teacher, Administrativo, Direção |
 | `turmas-old` | Administrativo, Direção |
+| `rock-reposicoes-v1` | Administrativo, Comercial, Direção, Pedagógico |
 
 > [!NOTE]
 > O ID `rock-portal-v1` no banco de dados refere-se ao projeto **rock-login-v1** (nome da pasta local e no Netlify).
@@ -378,6 +379,7 @@ A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossis
 | **To-Do List v1** | `to-do-list-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
 | **Relatório Menor v1** | `relatorio-menor-v1` | rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com |
 | **Turmas Legado** | `turmas-old` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
+| **Reposições v1** | `rock-reposicoes-v1` | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com |
 
 ---
 
