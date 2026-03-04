@@ -138,6 +138,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `student-abcd` | Teacher, Administrativo, Direção, Pedagógico |
 | `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
 | `rock-compras-manutencao-v1` | Direção, Administrativo, Pedagógico |
+| `pdi-v1` | Direção, Pedagógico, Administrativo |
 | `rock-portal-v1` | Direção, Administrativo, Pedagógico, Teacher, Comercial |
 
 > [!NOTE]
@@ -302,6 +303,7 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 | ID do App | Nome do Aplicaivo | Prefixo de Tabelas | Descrição |
 |---|---|---|---|
 | `rock-portal-v1` | Rock Login V1 | - | Portal central de login e documentação (Referenciado como `rock-portal-v1` no BD) |
+| `pdi-v1` | PDI v1 | `pdi_` | Plano de Desenvolvimento Individual |
 | `rockrema-v2` | Rematrícula v2 | `rema_` | Gestão de rematrículas |
 | `student-abcd` | Portal do Aluno (ABCD) | `alunos`, `turmas_` | Portal acadêmico para alunos |
 | `rock-recibo-v4` | Recibos v4 | `rc_`, `rec_` | Emissão e gestão de recibos |
