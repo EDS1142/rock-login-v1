@@ -2,7 +2,7 @@
 
 ## 🎯 Visão Geral
 
-O **Rock Login V1** é o portal de design de referência para todas as telas de login do ecossistema **Rock Team**. Ele define o **layout premium padronizado** adotado por todos os Web Apps.
+O **Rock Login V1** (referenciado no BD como `rock-portal-v1`) é o portal de design de referência para todas as telas de login do ecossistema **Rock Team**. Ele define o **layout premium padronizado** adotado por todos os Web Apps.
 
 > [!IMPORTANT]
 > **Modelo atual: Login Local por App.**
@@ -138,6 +138,9 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `student-abcd` | Teacher, Administrativo, Direção, Pedagógico |
 | `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
 | `rock-portal-v1` | Direção, Administrativo, Pedagógico, Teacher, Comercial |
+
+> [!NOTE]
+> O ID `rock-portal-v1` no banco de dados refere-se ao projeto **rock-login-v1** (nome da pasta local e no Netlify).
 
 ### Adicionar Permissão
 ```sql
@@ -297,7 +300,7 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 
 | ID do App | Nome do Aplicaivo | Prefixo de Tabelas | Descrição |
 |---|---|---|---|
-| `rock-portal-v1` | Portal de Login Unificado | - | Portal central de login e documentação |
+| `rock-portal-v1` | Rock Login V1 | - | Portal central de login e documentação (Referenciado como `rock-portal-v1` no BD) |
 | `rockrema-v2` | Rematrícula v2 | `rema_` | Gestão de rematrículas |
 | `student-abcd` | Portal do Aluno (ABCD) | `alunos`, `turmas_` | Portal acadêmico para alunos |
 | `rock-recibo-v4` | Recibos v4 | `rc_`, `rec_` | Emissão e gestão de recibos |
@@ -320,7 +323,7 @@ A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossis
 
 | Aplicativo | ID do App | Usuários Autorizados (E-mails) |
 |---|---|---|
-| **Portal de Login Unificado** | `rock-portal-v1` | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
+| **Rock Login V1** | `rock-portal-v1` | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
 | **Teachers Room v1** | `teachers-room-v1` | rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **Gestão de Turmas v3** | `rockpg-turmas-v3` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
 | **Recibos v4** | `rock-recibo-v4` | rockfeller.pontagrossa@gmail.com, vanessa.russano@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com |
