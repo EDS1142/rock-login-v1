@@ -149,6 +149,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `rock-portal-v1 (rock-login-v1)` | Teacher, Administrativo, Comercial, Direção, Pedagógico |
 | `rockpg-turmas-v3` | Teacher, Administrativo, Direção |
 | `to-do-list-v1` | Teacher, Administrativo, Direção |
+| `todo-list-v2` | Teacher, Administrativo, Comercial, Direção, Pedagógico |
 | `turmas-old` | Administrativo, Direção |
 | `rock-reposicoes-v1` | Administrativo, Comercial, Direção, Pedagógico |
 
@@ -353,7 +354,7 @@ SELECT COUNT(*) FROM central_permissions WHERE app_id = 'meu-app-id';
 | `rockpg-turmas-v3` | Gestão de Turmas v3 | `app_` | Administração de turmas e alunos |
 | `pdi-v1` | PDI v1 | `pdi_` | Plano de Desenvolvimento Individual |
 | `rock-reposicoes-v1` | Reposições v1 | `repo_` | Controle e agendamento de reposições |
-| `todo-list-v2` | To-Do List v2 | `todo_` | Gerenciador de tarefas e pendências |
+| `todo-list-v2` | To-Do List v2 | `todo_` | Gerenciador de tarefas e pendências (com separação de perfis Teacher/Admin) |
 | `to-do-list-v1` | To-Do List v1 | `todo_` | Versão legado do To-Do List |
 | `relatorio-menor-v1` | Relatório Menor v1 | `rm_` | Gestão de relatórios e documentação pedagógica |
 | `turmas-old` | Turmas Legado | `app_` | Backup / Consulta de dados antigos |
@@ -367,17 +368,18 @@ A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossis
 | Aplicativo | ID do App | Usuários Autorizados (E-mails) |
 |---|---|---|
 | **Rock Login V1** | `rock-portal-v1` | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
-| **Teachers Room v1** | `teachers-room-v1` | rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
+| **Teachers Room v1** | `teachers-room-v1` | rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mariasantana2108@gmail.com |
 | **Gestão de Turmas v3** | `rockpg-turmas-v3` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
 | **Recibos v4** | `rock-recibo-v4` | rockfeller.pontagrossa@gmail.com, vanessa.russano@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com |
 | **Régua de Comunicação v2** | `regua-comunicacao-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
 | **Rematrícula v2** | `rockrema-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **Portal do Aluno (ABCD)** | `student-abcd` | spiderdan145@gmail.com, fashionlivea@gmail.com, dematosr20@gmail.com, gusmartins94@gmail.com, brunrosa90@gmail.com, henrique.rockfeller@gmail.com, rockpg.adm@gmail.com, vinicius.mgk20@gmail.com, silviamsoares1710@gmail.com, luisa.grigoldias@hotmail.com, teacherdave.rockefeller@gmail.com, rockfeller.pontagrossa@gmail.com, nicolemflemming2@gmail.com, mikael.rockfeller25@gmail.com |
 | **Cancelamentos v1** | `rock-cancel-v1` | silviamsoares1710@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
-| **PDI v1** | `pdi-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
+| **PDI v1** | `pdi-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com, mariasantana2108@gmail.com |
 | **Compras e Manutenção** | `compras-manutencao-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **To-Do List v1** | `to-do-list-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
-| **Relatório Menor v1** | `relatorio-menor-v1` | rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com |
+| **To-Do List v2** | `todo-list-v2` | rockfeller.pontagrossa@gmail.com (Direção), silviamsoares1710@gmail.com (Pedagógico), rockpg.adm@gmail.com (Administrativo), vanessa.russano@gmail.com (Comercial), brunrosa90@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, gusmartins94@gmail.com, fashionlivea@gmail.com, nicolemflemming2@gmail.com, vinicius.mgk20@gmail.com, henrique.rockfeller@gmail.com, luisa.grigoldias@hotmail.com, mariasantana2108@gmail.com (Teachers) |
+| **Relatório Menor v1** | `relatorio-menor-v1` | rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com, mariasantana2108@gmail.com |
 | **Turmas Legado** | `turmas-old` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **Reposições v1** | `rock-reposicoes-v1` | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com |
 
@@ -393,7 +395,8 @@ Relacionamento entre papéis (roles) e os e-mails associados.
 | **Pedagógico** | silviamsoares1710@gmail.com |
 | **Administrativo** | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com |
 | **Comercial** | vanessa.russano@gmail.com |
-| **Teacher / Professor** | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com |
+| **Teacher / Professor** | gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, luisa.grigoldias@hotmail.com, mariasantana2108@gmail.com |
+| **Teacher / Professor (Desligados)** | ~~mikael.rockfeller25@gmail.com~~, ~~dematosr20@gmail.com~~ |
 
 ---
 
