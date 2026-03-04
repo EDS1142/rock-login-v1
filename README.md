@@ -126,13 +126,6 @@ $$;
 | **Teacher** | Professores |
 | **Comercial** | Equipe comercial |
 
-### Permissões por App (Atual)
-| App | Roles com Acesso |
-|---|---|
-| `regua-comunicacao-v2` | Administrativo, Direção |
-| `teachers-room-v1` | Teacher, Administrativo, Direção, Pedagógico |
-| `rockrema-v2` | Direção, Pedagógico, Administrativo |
-
 ### Adicionar Permissão
 ```sql
 -- Adicionar acesso para um usuário
@@ -268,7 +261,7 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 ### 3. NÃO usar `async/await` no callback de `onAuthStateChange`
 **Problema:** Pode travar o motor de autenticação e criar race conditions.
 
-**Solução:** Use o callback apenas para setar estado local. Faça chamadas async em `useEffect` separados ou inline.
+**Solução:** Use the callback apenas para setar estado local. Faça chamadas async em `useEffect` separados ou inline.
 
 ### 4. Sempre verificar a URL do logo
 **Problema:** Vite adiciona hash nos assets. `logo.png` vira `logo-3ZeB-E8p.png`.
@@ -289,42 +282,69 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 
 ## 🗃️ Ecossistema de Aplicações
 
-| # | App ID | Prefixo de Tabelas | Descrição |
+| ID do App | Nome do Aplicaivo | Prefixo de Tabelas | Descrição |
 |---|---|---|---|
-| 1 | `rock-todo-list-v2` | `todo_` | Gerenciador de tarefas |
-| 2 | `student-abcd` | `alunos`, `turmas_` | Portal do acadêmico |
-| 3 | `rock-recibo-v4` | `rc_`, `rec_` | Emissão de recibos |
-| 4 | `rockrema-v2` | `rema_` | Gestão de rematrículas |
-| 5 | `rock-cancel-v1` | `cancel_` | Cancelamentos |
-| 6 | `rock-reposicoes-v1` | `repo_` | Controle de reposições |
-| 7 | `regua-comunicacao-v2` | `rg_` | Comunicação e templates |
-| 8 | `compras-manutencao-v1` | `buy_` | Gestão de compras |
-| 9 | `teachers-room-v1` | `tr_` | Portal dos professores |
-| 10 | `rockpg-turmas-v3` | `app_` | Gestão administrativa central |
-| 11 | `pdi-v1` | `pdi_` | Plano de Desenvolvimento Individual |
+| `rock-portal-v1` | Portal de Login Unificado | - | Portal central de login e documentação |
+| `rockrema-v2` | Rematrícula v2 | `rema_` | Gestão de rematrículas |
+| `student-abcd` | Portal do Aluno (ABCD) | `alunos`, `turmas_` | Portal acadêmico para alunos |
+| `rock-recibo-v4` | Recibos v4 | `rc_`, `rec_` | Emissão e gestão de recibos |
+| `rock-cancel-v1` | Cancelamentos v1 | `cancel_` | Gestão de cancelamentos de matrículas |
+| `regua-comunicacao-v2` | Régua de Comunicação v2 | `rg_` | Automação de réguas e templates |
+| `compras-manutencao-v1` | Compras e Manutenção v1 | `buy_` | Gestão interna de compras |
+| `teachers-room-v1` | Teachers Room v1 | `tr_` | Portal central para professores |
+| `rockpg-turmas-v3` | Gestão de Turmas v3 | `app_` | Administração de turmas e alunos |
+| `pdi-v1` | PDI v1 | `pdi_` | Plano de Desenvolvimento Individual |
+| `rock-reposicoes-v1` | Reposições v1 | `repo_` | Controle e agendamento de reposições |
+| `todo-list-v2` | To-Do List v2 | `todo_` | Gerenciador de tarefas e pendências |
+| `to-do-list-v1` | To-Do List v1 | `todo_` | Versão legado do To-Do List |
+| `turmas-old` | Turmas Legado | `app_` | Backup / Consulta de dados antigos |
 
 ---
 
-## 🔧 Configuração do Portal (rock-login-v1)
+## 📊 Matriz de Acesso (App x Usuários)
 
-O portal em si é um app Vite + HTML/CSS/JS puro.
+A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossistema atual.
 
-```
-rock-login-v1/
-├── index.html          # Página principal
-├── logo.png            # Logo (source)
-├── public/
-│   └── logo.png        # Logo (acessível via /logo.png após deploy)
-├── docs/
-│   └── README.md       # Esta documentação
-├── package.json
-└── vite.config.js
-```
+| Aplicativo | ID do App | Usuários Autorizados (E-mails) |
+|---|---|---|
+| **Portal de Login Unificado** | `rock-portal-v1` | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
+| **Teachers Room v1** | `teachers-room-v1` | rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
+| **Gestão de Turmas v3** | `rockpg-turmas-v3` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
+| **Recibos v4** | `rock-recibo-v4` | rockfeller.pontagrossa@gmail.com, vanessa.russano@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com |
+| **Régua de Comunicação v2** | `regua-comunicacao-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
+| **Rematrícula v2** | `rockrema-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
+| **Portal do Aluno (ABCD)** | `student-abcd` | spiderdan145@gmail.com, fashionlivea@gmail.com, dematosr20@gmail.com, gusmartins94@gmail.com, brunrosa90@gmail.com, henrique.rockfeller@gmail.com, rockpg.adm@gmail.com, vinicius.mgk20@gmail.com, silviamsoares1710@gmail.com, luisa.grigoldias@hotmail.com, teacherdave.rockefeller@gmail.com, rockfeller.pontagrossa@gmail.com, nicolemflemming2@gmail.com, mikael.rockfeller25@gmail.com |
+| **Cancelamentos v1** | `rock-cancel-v1` | silviamsoares1710@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
+| **PDI v1** | `pdi-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
+| **Compras e Manutenção** | `compras-manutencao-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
+| **To-Do List v1** | `to-do-list-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
+| **Turmas Legado** | `turmas-old` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 
-### Variáveis em cada App
-Cada app React precisa de:
-- `VITE_SUPABASE_URL` — URL do projeto Supabase (`BD_Geral`)
-- `VITE_SUPABASE_ANON_KEY` — Chave pública do Supabase
+---
+
+## 👤 Perfis e Vínculos
+
+Relacionamento entre papéis (roles) e os e-mails associados.
+
+| Perfil (Role) | E-mails Vinculados |
+|---|---|
+| **Direção** | rockfeller.pontagrossa@gmail.com |
+| **Pedagógico** | silviamsoares1710@gmail.com |
+| **Administrativo** | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com |
+| **Comercial** | vanessa.russano@gmail.com |
+| **Teacher / Professor** | mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com |
+
+---
+
+## 🗄️ Tabelas de Registro (BD)
+
+Os dados de acesso e permissões estão distribuídos nas seguintes tabelas do Supabase:
+
+1.  **`auth.users`**: Gerencia a autenticação primária (Email, Senha, ID do Usuário).
+2.  **`public.profiles`**: Armazena o perfil básico de cada usuário vinculado ao `auth.users`, incluindo e-mail e papel base (`role`).
+3.  **`public.central_permissions`**: A tabela definitiva de permissões. Mapeia o `user_id` para um `app_id` e define o `role` específico para aquele aplicativo. Possui controle de ativação (`active`).
+4.  **`public.central_apps`**: Cadastro mestre de todos os aplicativos autorizados no ecossistema (ID, Nome, URL).
+5.  **`public.user_roles`**: Tabela redundante/legada opcional para alguns apps (em processo de migração total para `central_permissions`).
 
 ---
 
