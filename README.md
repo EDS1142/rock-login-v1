@@ -139,6 +139,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
 | `rock-compras-manutencao-v1` | Direção, Administrativo, Pedagógico |
 | `pdi-v1` | Direção, Pedagógico |
+| `relatorio-menor-v1` | Teacher, Administrativo, Pedagógico, Direção |
 | `rock-portal-v1 (rock-login-v1)`| Direção, Administrativo, Pedagógico, Teacher, Comercial |
 
 > [!NOTE]
@@ -316,6 +317,7 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 | `rock-reposicoes-v1` | Reposições v1 | `repo_` | Controle e agendamento de reposições |
 | `todo-list-v2` | To-Do List v2 | `todo_` | Gerenciador de tarefas e pendências |
 | `to-do-list-v1` | To-Do List v1 | `todo_` | Versão legado do To-Do List |
+| `relatorio-menor-v1` | Relatório Menor v1 | `rm_` | Gestão de relatórios e documentação pedagógica |
 | `turmas-old` | Turmas Legado | `app_` | Backup / Consulta de dados antigos |
 
 ---
@@ -337,6 +339,7 @@ A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossis
 | **PDI v1** | `pdi-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
 | **Compras e Manutenção** | `compras-manutencao-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **To-Do List v1** | `to-do-list-v1` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
+| **Relatório Menor v1** | `relatorio-menor-v1` | rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com, mikael.rockfeller25@gmail.com, gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, dematosr20@gmail.com, luisa.grigoldias@hotmail.com |
 | **Turmas Legado** | `turmas-old` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 
 ---
