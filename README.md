@@ -139,7 +139,7 @@ Abaixo estão os aplicativos que já utilizam o sistema de autenticação centra
 | `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
 | `rock-compras-manutencao-v1` | Direção, Administrativo, Pedagógico |
 | `pdi-v1` | Direção, Pedagógico |
-| `rock-portal-v1` (rock-login| Direção, Administrativo, Pedagógico, Teacher, Comercial |
+| `rock-portal-v1 (rock-login-v1)`| Direção, Administrativo, Pedagógico, Teacher, Comercial |
 
 > [!NOTE]
 > O ID `rock-portal-v1` no banco de dados refere-se ao projeto **rock-login-v1** (nome da pasta local e no Netlify).
