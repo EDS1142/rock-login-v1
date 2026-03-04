@@ -135,18 +135,21 @@ $$;
 ### Permissões por App (Migrados)
 Abaixo estão os aplicativos que já utilizam o sistema de autenticação centralizado (V3.2 Bulletproof) e as roles configuradas para cada um:
 
-| App | Roles com Acesso |
+| App | Roles com Acesso (BD Real) |
 |---|---|
 | `regua-comunicacao-v2` | Administrativo, Direção |
 | `teachers-room-v1` | Teacher, Administrativo, Direção, Pedagógico |
-| `rockrema-v2` | Direção, Pedagógico, Administrativo |
-| `rock-cancel-v1` | Direção, Administrativo, Pedagógico |
+| `rockrema-v2` | Administrativo, Direção, Pedagógico |
+| `rock-cancel-v1` | Administrativo, Direção |
 | `student-abcd` | Teacher, Administrativo, Direção, Pedagógico |
-| `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
-| `rock-compras-manutencao-v1` | Direção, Administrativo, Pedagógico |
+| `rock-recibo-v4` | Administrativo, Comercial, Direção |
+| `compras-manutencao-v1` | Administrativo, Comercial, Direção, Pedagógico |
 | `pdi-v1` | Direção, Pedagógico |
-| `relatorio-menor-v1` | Teacher, Administrativo, Pedagógico, Direção |
-| `rock-portal-v1 (rock-login-v1)`| Direção, Administrativo, Pedagógico, Teacher, Comercial |
+| `relatorio-menor-v1` | Teacher, Administrativo, Direção, Pedagógico |
+| `rock-portal-v1 (rock-login-v1)` | Teacher, Administrativo, Comercial, Direção, Pedagógico |
+| `rockpg-turmas-v3` | Teacher, Administrativo, Direção |
+| `to-do-list-v1` | Teacher, Administrativo, Direção |
+| `turmas-old` | Administrativo, Direção |
 
 > [!NOTE]
 > O ID `rock-portal-v1` no banco de dados refere-se ao projeto **rock-login-v1** (nome da pasta local e no Netlify).
@@ -302,6 +305,34 @@ FROM auth.users WHERE email IN ('rockfeller.pontagrossa@gmail.com');
 **Problema:** Usuários que usaram o SSO antigo podem ter sessões residuais no navegador.
 
 **Solução:** Na tela de login, ao detectar sessão sem acesso, fazer `signOut()` silencioso e mostrar o formulário limpo.
+
+### 7. OBRIGATÓRIO: Criar `public/_redirects` para SPAs no Netlify
+**Problema:** Apps com `BrowserRouter` (React Router) retornam **404** quando o usuário acessa diretamente uma rota como `/login` ou `/auth`. O Netlify procura um arquivo físico que não existe.
+
+**Solução:** Criar o arquivo `public/_redirects` com o conteúdo:
+```
+/*    /index.html   200
+```
+O `netlify.toml` com `[[redirects]]` deveria funcionar, mas é **menos confiável**. O arquivo `_redirects` dentro de `public/` é copiado diretamente para `dist/` pelo Vite e tem **prioridade máxima**. Sempre incluir ambos como garantia.
+
+### 8. Constraint UNIQUE (user_id, app_id) na tabela de permissões
+**Problema:** A tabela `central_permissions` possui constraint `UNIQUE(user_id, app_id)`, ou seja, **um usuário só pode ter UMA role por app**. Tentativas de inserir múltiplas roles para o mesmo usuário+app falham silenciosamente.
+
+**Solução:** Na prática funciona bem porque o `check_app_access` verifica apenas se o registro **existe** (independente da role). Se precisar diferenciar comportamentos por role dentro de um app, usar a coluna `role` existente, sem tentar inserir registros duplicados.
+
+### 9. NÃO usar SSO centralizado com redirect entre apps
+**Problema:** O modelo de SSO centralizado (Portal → Token na URL → App aplica sessão) é **extremamente frágil**. Race conditions entre `setSession()`, `onAuthStateChange()` e limpeza de URL causam loops infinitos de redirecionamento. Cada tentativa de correção introduz novos problemas.
+
+**Solução:** Usar **Login Local por App** (modelo atual). Cada app tem sua própria tela de login, autentica via `signInWithPassword()` e verifica permissão via RPC. Simples, robusto e sem dependências.
+
+### 10. Sempre verificar permissões no BD ANTES de migrar um app
+**Problema:** Ao migrar um app para usar `check_app_access`, se não existirem registros na tabela `central_permissions` para aquele `app_id`, **TODOS os usuários serão bloqueados** com "Acesso Negado".
+
+**Solução:** Antes de fazer deploy do novo login, rodar uma query para garantir que os registros existem:
+```sql
+SELECT COUNT(*) FROM central_permissions WHERE app_id = 'meu-app-id';
+-- Se retornar 0, inserir as permissões antes do deploy!
+```
 
 ---
 
