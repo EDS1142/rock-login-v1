@@ -9,6 +9,12 @@ O **Rock Login V1** (referenciado no BD como `rock-portal-v1`) é o portal de de
 > Cada aplicativo possui sua própria tela de login independente, com o layout visual idêntico ao portal.
 > O SSO centralizado foi **descontinuado** por instabilidade e complexidade excessiva.
 
+> [!CAUTION]
+> **REGRA CRÍTICA DE PADRONIZAÇÃO DE LAYOUT**
+> **NUNCA** mude a estrutura do login para variações de tela cheia, split horizontal ou designs personalizados. 
+> Todos os aplicativos **DEVEM** usar o padrão **Card Centralizado** (1000px max) com animação `cardEnter`.
+> Qualquer alteração que fuja desse padrão visual (Card Branco flutuante sobre fundo degradê radial) é considerada um **ERRO GRAVE**.
+
 ---
 
 ## 🏗️ Arquitetura de Autenticação
