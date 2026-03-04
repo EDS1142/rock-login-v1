@@ -126,6 +126,19 @@ $$;
 | **Teacher** | Professores |
 | **Comercial** | Equipe comercial |
 
+### Permissões por App (Migrados)
+Abaixo estão os aplicativos que já utilizam o sistema de autenticação centralizado (V3.2 Bulletproof) e as roles configuradas para cada um:
+
+| App | Roles com Acesso |
+|---|---|
+| `regua-comunicacao-v2` | Administrativo, Direção |
+| `teachers-room-v1` | Teacher, Administrativo, Direção, Pedagógico |
+| `rockrema-v2` | Direção, Pedagógico, Administrativo |
+| `rock-cancel-v1` | Direção, Administrativo, Pedagógico |
+| `student-abcd` | Teacher, Administrativo, Direção, Pedagógico |
+| `rock-recibo-v4` | Direção, Administrativo, Comercial, Pedagógico |
+| `rock-portal-v1` | Direção, Administrativo, Pedagógico, Teacher, Comercial |
+
 ### Adicionar Permissão
 ```sql
 -- Adicionar acesso para um usuário
