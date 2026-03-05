@@ -336,6 +336,17 @@ SELECT COUNT(*) FROM central_permissions WHERE app_id = 'meu-app-id';
 -- Se retornar 0, inserir as permissões antes do deploy!
 ```
 
+### 11. Posicionamento do `AuthProvider` e Reatividade do Logout
+**Problema:** O logout é executado (`signOut`), mas a aplicação não redireciona automaticamente para a tela de login, permanecendo na rota protegida ou exigindo refresh manual.
+
+**Causa:** O `AuthProvider` está aninhado dentro do `ProtectedRoute`, ou o `ProtectedRoute` não está "ouvindo" as mudanças de estado do contexto de autenticação.
+
+**Solução:** 
+1. O `<AuthProvider>` deve envolver toda a aplicação no `App.tsx` (incluindo o `BrowserRouter`).
+2. O `ProtectedRoute` deve utilizar o hook `useAuth()` para acessar a `session`.
+3. Adicione a `session` como dependência no `useEffect` de verificação do `ProtectedRoute`. Assim, quando a sessão for limpa pelo logout, o componente re-renderiza e dispara o redirecionamento instantâneo.
+
+
 ---
 
 ## 🗃️ Ecossistema de Aplicações
