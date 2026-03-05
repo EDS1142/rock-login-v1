@@ -404,7 +404,7 @@ Relacionamento entre papéis (roles) e os e-mails associados.
 |---|---|
 | **Direção** | rockfeller.pontagrossa@gmail.com |
 | **Pedagógico** | silviamsoares1710@gmail.com |
-| **Administrativo** | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com |
+| **Administrativo** |rockpg.adm@gmail.com |
 | **Comercial** | vanessa.russano@gmail.com |
 | **Teacher / Professor** | gusmartins94@gmail.com, spiderdan145@gmail.com, henrique.rockfeller@gmail.com, fashionlivea@gmail.com, teacherdave.rockefeller@gmail.com, brunrosa90@gmail.com, vinicius.mgk20@gmail.com, nicolemflemming2@gmail.com, luisa.grigoldias@hotmail.com, mariasantana2108@gmail.com |
 | **Teacher / Professor (Desligados)** | ~~mikael.rockfeller25@gmail.com~~, ~~dematosr20@gmail.com~~ |
