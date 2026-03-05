@@ -360,6 +360,7 @@ SELECT COUNT(*) FROM central_permissions WHERE app_id = 'meu-app-id';
 | `rock-recibo-v4` | Recibos v4 | `rc_`, `rec_` | Emissão e gestão de recibos |
 | `rock-cancel-v1` | Cancelamentos v1 | `cancel_` | Gestão de cancelamentos de matrículas |
 | `regua-comunicacao-v2` | Régua de Comunicação v2 | `rg_` | Automação de réguas e templates |
+| `rock-frequency-v1` | Frequência Rock | - | Gestão de frequência de alunos |
 | `compras-manutencao-v1` | Compras e Manutenção v1 | `buy_` | Gestão interna de compras |
 | `teachers-room-v1` | Teachers Room v1 | `tr_` | Portal central para professores |
 | `rockpg-turmas-v3` | Gestão de Turmas v3 | `app_` | Administração de turmas e alunos |
@@ -383,6 +384,7 @@ A tabela abaixo detalha quais e-mails têm acesso a quais aplicativos no ecossis
 | **Gestão de Turmas v3** | `rockpg-turmas-v3` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com, mikael.rockfeller25@gmail.com, vinicius.mgk20@gmail.com, brunrosa90@gmail.com, gusmartins94@gmail.com, henrique.rockfeller@gmail.com, nicolemflemming2@gmail.com, spiderdan145@gmail.com, teacherdave.rockefeller@gmail.com, dematosr20@gmail.com, fashionlivea@gmail.com, luisa.grigoldias@hotmail.com |
 | **Recibos v4** | `rock-recibo-v4` | rockfeller.pontagrossa@gmail.com, vanessa.russano@gmail.com, silviamsoares1710@gmail.com, rockpg.adm@gmail.com |
 | **Régua de Comunicação v2** | `regua-comunicacao-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
+| **Frequência Rock** | `rock-frequency-v1` | rockfeller.pontagrossa@gmail.com, rockpg.adm@gmail.com, silviamsoares1710@gmail.com, vanessa.russano@gmail.com |
 | **Rematrícula v2** | `rockrema-v2` | rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com, silviamsoares1710@gmail.com |
 | **Portal do Aluno (ABCD)** | `student-abcd` | spiderdan145@gmail.com, fashionlivea@gmail.com, dematosr20@gmail.com, gusmartins94@gmail.com, brunrosa90@gmail.com, henrique.rockfeller@gmail.com, rockpg.adm@gmail.com, vinicius.mgk20@gmail.com, silviamsoares1710@gmail.com, luisa.grigoldias@hotmail.com, teacherdave.rockefeller@gmail.com, rockfeller.pontagrossa@gmail.com, nicolemflemming2@gmail.com, mikael.rockfeller25@gmail.com |
 | **Cancelamentos v1** | `rock-cancel-v1` | silviamsoares1710@gmail.com, rockpg.adm@gmail.com, rockfeller.pontagrossa@gmail.com |
