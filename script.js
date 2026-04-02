@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import pkg from './package.json';
 
 /**
  * REUSABLE LOGIN CONFIGURATION
@@ -6,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 const CONFIG = {
     appName: "Rock Team",
     appDescription: "Seu portal unificado de acesso a todas as ferramentas e soluções do ecossistema Rock Team.",
-    copyright: `© ${new Date().getFullYear()} Rock Education System`,
+    copyright: `© ${new Date().getFullYear()} Login &bull; v${pkg.version}`,
     primaryColor: "#0084c2",
     secondaryColor: "#005a87",
     defaultAppId: 'rock-portal-v1'

@@ -6,6 +6,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "prebuild": "npm version patch --no-git-tag-version",
     "dev": "vite --port 3000 --host",
     "build": "vite build",
     "preview": "vite preview"
